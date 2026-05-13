@@ -1,0 +1,114 @@
+{
+  "brand": "ZAMAXSHAR",
+  "nav": {
+    "home": "Bosh sahifa",
+    "courses": "Kurslar",
+    "teachers": "Ustozlar",
+    "register": "Ro'yxatdan o'tish",
+    "contact": "Aloqa",
+    "adminLogin": "Super Admin",
+    "studentLogin": "Talaba"
+  },
+  "hero": {
+    "title": "Bilimga yo'l - ZAMAXSHAR o'quv markazi",
+    "subtitle": "Zamonaviy ta'lim, tajribali ustozlar va sertifikat bilan sifatli bilim.",
+    "cta": "Ro'yxatdan o'tish",
+    "secondary": "Kurslarni ko'rish"
+  },
+  "stats": {
+    "students": "Talabalar",
+    "teachers": "Ustozlar",
+    "courses": "Kurslar",
+    "years": "Yillik tajriba"
+  },
+  "courses": {
+    "title": "Bizning kurslar",
+    "subtitle": "O'zingizga mos kursni tanlang",
+    "detail": "Batafsil",
+    "price": "Narx",
+    "duration": "Davomiyligi",
+    "format": "Format",
+    "modules": "Modullar",
+    "results": "Natija",
+    "register": "Ro'yxatdan o'tish"
+  },
+  "teachers": {
+    "title": "Ustozlarimiz",
+    "subtitle": "Tajribali va malakali o'qituvchilar"
+  },
+  "register": {
+    "title": "Ro'yxatdan o'tish",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "phone": "Telefon raqam",
+    "course": "Kurs",
+    "studyMode": "O'qish formati",
+    "online": "Online",
+    "offline": "Offline",
+    "startDate": "Boshlanish sanasi",
+    "message": "Izoh",
+    "submit": "Yuborish",
+    "success": "Arizangiz qabul qilindi",
+    "error": "Xato yuz berdi"
+  },
+  "contact": {
+    "title": "Aloqa",
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "address": "Manzil",
+    "name": "Ismingiz",
+    "message": "Xabar",
+    "send": "Yuborish"
+  },
+  "auth": {
+    "username": "Login",
+    "password": "Parol",
+    "login": "Kirish",
+    "logout": "Chiqish",
+    "adminLogin": "Admin kirish",
+    "studentLogin": "Talaba kirish"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "applications": "Arizalar",
+    "students": "Talabalar",
+    "courses": "Kurslar",
+    "teachers": "Ustozlar",
+    "totalApplications": "Jami arizalar",
+    "newApplications": "Yangi arizalar",
+    "acceptedApplications": "Qabul qilingan",
+    "rejectedApplications": "Rad etilgan",
+    "totalStudents": "Jami talabalar",
+    "paidStudents": "To'lov qilganlar",
+    "unpaidStudents": "To'lov qilmaganlar"
+  },
+  "student": {
+    "dashboard": "Mening kabinetim",
+    "course": "Kurs",
+    "teacher": "Ustoz",
+    "payment": "To'lov holati",
+    "validFrom": "Boshlanish",
+    "validUntil": "Tugash"
+  },
+  "status": {
+    "new": "Yangi",
+    "accepted": "Qabul qilindi",
+    "rejected": "Rad etildi",
+    "converted_to_student": "Studentga aylantirildi",
+    "paid": "To'langan",
+    "unpaid": "To'lanmagan",
+    "expired": "Muddati o'tgan"
+  },
+  "common": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "create": "Yaratish",
+    "confirm": "Tasdiqlash",
+    "loading": "Yuklanmoqda...",
+    "noData": "Ma'lumot yo'q",
+    "actions": "Amallar",
+    "view": "Ko'rish"
+  }
+}

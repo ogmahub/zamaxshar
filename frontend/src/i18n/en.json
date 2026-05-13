@@ -1,0 +1,114 @@
+{
+  "brand": "ZAMAXSHAR",
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "teachers": "Teachers",
+    "register": "Register",
+    "contact": "Contact",
+    "adminLogin": "Super Admin",
+    "studentLogin": "Student"
+  },
+  "hero": {
+    "title": "Path to knowledge - ZAMAXSHAR Education Center",
+    "subtitle": "Modern education, experienced teachers and quality knowledge with certificate.",
+    "cta": "Register Now",
+    "secondary": "View Courses"
+  },
+  "stats": {
+    "students": "Students",
+    "teachers": "Teachers",
+    "courses": "Courses",
+    "years": "Years of Experience"
+  },
+  "courses": {
+    "title": "Our Courses",
+    "subtitle": "Choose the right course for you",
+    "detail": "Details",
+    "price": "Price",
+    "duration": "Duration",
+    "format": "Format",
+    "modules": "Modules",
+    "results": "Results",
+    "register": "Register"
+  },
+  "teachers": {
+    "title": "Our Teachers",
+    "subtitle": "Experienced and qualified educators"
+  },
+  "register": {
+    "title": "Registration",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "course": "Course",
+    "studyMode": "Study Mode",
+    "online": "Online",
+    "offline": "Offline",
+    "startDate": "Start Date",
+    "message": "Message",
+    "submit": "Submit",
+    "success": "Your application is received",
+    "error": "An error occurred"
+  },
+  "contact": {
+    "title": "Contact",
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "address": "Address",
+    "name": "Your Name",
+    "message": "Message",
+    "send": "Send"
+  },
+  "auth": {
+    "username": "Username",
+    "password": "Password",
+    "login": "Login",
+    "logout": "Logout",
+    "adminLogin": "Admin Login",
+    "studentLogin": "Student Login"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "students": "Students",
+    "courses": "Courses",
+    "teachers": "Teachers",
+    "totalApplications": "Total Applications",
+    "newApplications": "New Applications",
+    "acceptedApplications": "Accepted",
+    "rejectedApplications": "Rejected",
+    "totalStudents": "Total Students",
+    "paidStudents": "Paid",
+    "unpaidStudents": "Unpaid"
+  },
+  "student": {
+    "dashboard": "My Dashboard",
+    "course": "Course",
+    "teacher": "Teacher",
+    "payment": "Payment Status",
+    "validFrom": "Start Date",
+    "validUntil": "End Date"
+  },
+  "status": {
+    "new": "New",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "converted_to_student": "Converted",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "expired": "Expired"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Actions",
+    "view": "View"
+  }
+}

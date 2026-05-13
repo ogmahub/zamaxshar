@@ -1,0 +1,114 @@
+{
+  "brand": "ZAMAXSHAR",
+  "nav": {
+    "home": "Главная",
+    "courses": "Курсы",
+    "teachers": "Учителя",
+    "register": "Регистрация",
+    "contact": "Контакты",
+    "adminLogin": "Супер Админ",
+    "studentLogin": "Студент"
+  },
+  "hero": {
+    "title": "Путь к знаниям - учебный центр ZAMAXSHAR",
+    "subtitle": "Современное образование, опытные учителя и качественные знания с сертификатом.",
+    "cta": "Регистрация",
+    "secondary": "Посмотреть курсы"
+  },
+  "stats": {
+    "students": "Студенты",
+    "teachers": "Учителя",
+    "courses": "Курсы",
+    "years": "Лет опыта"
+  },
+  "courses": {
+    "title": "Наши курсы",
+    "subtitle": "Выберите подходящий курс",
+    "detail": "Подробнее",
+    "price": "Цена",
+    "duration": "Длительность",
+    "format": "Формат",
+    "modules": "Модули",
+    "results": "Результат",
+    "register": "Регистрация"
+  },
+  "teachers": {
+    "title": "Наши учителя",
+    "subtitle": "Опытные и квалифицированные педагоги"
+  },
+  "register": {
+    "title": "Регистрация",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "phone": "Телефон",
+    "course": "Курс",
+    "studyMode": "Формат обучения",
+    "online": "Онлайн",
+    "offline": "Очно",
+    "startDate": "Дата начала",
+    "message": "Комментарий",
+    "submit": "Отправить",
+    "success": "Ваша заявка принята",
+    "error": "Произошла ошибка"
+  },
+  "contact": {
+    "title": "Контакты",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "address": "Адрес",
+    "name": "Ваше имя",
+    "message": "Сообщение",
+    "send": "Отправить"
+  },
+  "auth": {
+    "username": "Логин",
+    "password": "Пароль",
+    "login": "Войти",
+    "logout": "Выйти",
+    "adminLogin": "Вход админ",
+    "studentLogin": "Вход студент"
+  },
+  "admin": {
+    "dashboard": "Панель",
+    "applications": "Заявки",
+    "students": "Студенты",
+    "courses": "Курсы",
+    "teachers": "Учителя",
+    "totalApplications": "Всего заявок",
+    "newApplications": "Новые заявки",
+    "acceptedApplications": "Принятые",
+    "rejectedApplications": "Отклонённые",
+    "totalStudents": "Всего студентов",
+    "paidStudents": "Оплатившие",
+    "unpaidStudents": "Неоплатившие"
+  },
+  "student": {
+    "dashboard": "Мой кабинет",
+    "course": "Курс",
+    "teacher": "Учитель",
+    "payment": "Оплата",
+    "validFrom": "Начало",
+    "validUntil": "Окончание"
+  },
+  "status": {
+    "new": "Новая",
+    "accepted": "Принята",
+    "rejected": "Отклонена",
+    "converted_to_student": "Стал студентом",
+    "paid": "Оплачено",
+    "unpaid": "Не оплачено",
+    "expired": "Просрочено"
+  },
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "create": "Создать",
+    "confirm": "Подтвердить",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "actions": "Действия",
+    "view": "Посмотреть"
+  }
+}
