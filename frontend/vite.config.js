@@ -8,9 +8,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://10.111.74.219:5000",
+        target: "https://zamaxshar.onrender.com",
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   }
