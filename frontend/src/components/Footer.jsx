@@ -45,7 +45,7 @@ export default function Footer() {
             <h3 className="font-bold text-lg mb-4">Ijtimoiy tarmoqlar</h3>
             <div className="grid grid-cols-2 gap-3 max-w-[180px]">
               <a
-                href="https://instagram.com/zamaxshar"
+                href="https://instagram.com/zamaxshar_tm"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -59,7 +59,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://t.me/zamaxshar"
+                href="https://t.me/Zamaxshar_TM"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Telegram"

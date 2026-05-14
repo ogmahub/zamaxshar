@@ -14,7 +14,7 @@ const addDays = (date, days) => { const d = new Date(date); d.setDate(d.getDate(
 const makeBlank = () => {
   const today = new Date();
   return {
-    firstName: "", lastName: "", phone: "", password: "", course: "", teacher: "",
+    firstName: "", lastName: "", username: "", phone: "", password: "", course: "", teacher: "",
     paymentStatus: "unpaid",
     validFrom: toISODate(today),
     validUntil: toISODate(addDays(today, 30))
@@ -62,7 +62,7 @@ export default function StudentsAdmin() {
   const startEdit = (s) => {
     setEditing(s._id);
     setForm({
-      firstName: s.firstName, lastName: s.lastName || "", phone: s.phone, password: "",
+      firstName: s.firstName, lastName: s.lastName || "", username: s.username || "", phone: s.phone || "", password: s.passwordPlain || "",
       course: s.course?._id || "", teacher: s.teacher?._id || "",
       paymentStatus: s.paymentStatus,
       validFrom: s.validFrom ? s.validFrom.slice(0, 10) : "",
@@ -121,6 +121,11 @@ export default function StudentsAdmin() {
             <div className="grid sm:grid-cols-2 gap-3">
               <div><label className="label block mb-1">Ism</label><input className="input" required value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} /></div>
               <div><label className="label block mb-1">Familiya</label><input className="input" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} /></div>
+              <div>
+                <label className="label block mb-1">Login <span className="text-xs text-rose-500">*</span></label>
+                <input className="input" required placeholder="login" value={form.username}
+                  onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/\s/g, "") })} />
+              </div>
               <div>
                 <label className="label block mb-1">Telefon</label>
                 <div className="flex">

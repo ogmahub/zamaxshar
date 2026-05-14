@@ -28,8 +28,14 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
-  const loginStudent = async (phone, password) => {
-    const { data } = await api.post("/auth/student/login", { phone, password });
+  const loginStudent = async (username, password) => {
+    const { data } = await api.post("/auth/student/login", { username, password });
+    setUser(data.user);
+    return data.user;
+  };
+
+  const loginTeacher = async (username, password) => {
+    const { data } = await api.post("/auth/teacher/login", { username, password });
     setUser(data.user);
     return data.user;
   };
@@ -40,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginAdmin, loginStudent, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, loginAdmin, loginStudent, loginTeacher, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

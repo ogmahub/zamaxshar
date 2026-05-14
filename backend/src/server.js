@@ -24,7 +24,10 @@ await connectDB();
 await autoSeedIfEmpty();
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    process.env.CLIENT_URL || "http://localhost:5173",
+    "http://10.111.74.219:5173"
+  ],
   credentials: true
 }));
 app.use(express.json({ limit: "10mb" }));
@@ -46,6 +49,6 @@ app.use("/api/admins", adminRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`ZAMAXSHAR backend running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`ZAMAXSHAR backend running on http://0.0.0.0:${PORT}`);
 });

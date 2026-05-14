@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import api from "../api/axios.js";
 
-const blank = { name: "", phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
+const blank = { name: "", username: "", password: "", phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
 
 export default function TeachersAdmin() {
   const { t } = useTranslation();
@@ -20,7 +20,9 @@ export default function TeachersAdmin() {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...form, phone: form.phone.startsWith("+") ? form.phone : `+998${form.phone}` };
+      const payload = { ...form, phone: form.phone ? (form.phone.startsWith("+") ? form.phone : `+998${form.phone}`) : "" };
+      if (!payload.password) delete payload.password;
+      if (!payload.username) delete payload.username;
       if (editing && editing !== "new") await api.put(`/teachers/${editing}`, payload);
       else await api.post("/teachers", payload);
       toast.success("Saqlandi");
@@ -38,7 +40,7 @@ export default function TeachersAdmin() {
   const startEdit = (tc) => {
     setEditing(tc._id);
     const phone = (tc.phone || "").replace("+998", "");
-    setForm({ ...tc, phone });
+    setForm({ ...tc, phone, password: tc.passwordPlain || "" });
   };
 
   const handleFile = (key) => (e) => {
@@ -156,6 +158,31 @@ export default function TeachersAdmin() {
                         onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 9) })}
                       />
                     </div>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+                  <div>
+                    <label className="text-xs font-semibold tracking-[0.25em] text-indigo-600 block mb-1.5">LOGIN (Ism Familiya)</label>
+                    <input
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500"
+                      placeholder="Akmal Yusupov"
+                      value={form.username || ""}
+                      onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    />
+                    <p className="text-[11px] text-slate-500 mt-1">Bosh harflar katta, ism va familiya orasiga bo'sh joy qo'ying. Ustoz shu ko'rinishda kiradi.</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold tracking-[0.25em] text-indigo-600 block mb-1.5">
+                      PAROL {editing && editing !== "new" && <span className="text-slate-400 font-normal normal-case tracking-normal">(bo'sh = o'zgarmaydi)</span>}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500"
+                      placeholder="parol"
+                      value={form.password || ""}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    />
                   </div>
                 </div>
 

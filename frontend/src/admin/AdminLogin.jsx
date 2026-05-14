@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext.jsx";
+import PasswordInput from "../components/PasswordInput.jsx";
 
 export default function AdminLogin() {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 bg-gradient-to-br from-brand-50 to-brand-200 dark:from-slate-900 dark:to-brand-950">
-      <form onSubmit={submit} className="card p-8 w-full max-w-md">
+      <form onSubmit={submit} className="card p-8 w-full max-w-md" autoComplete="off">
         <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 mb-6">
           <button type="button" onClick={() => setTab("super")}
             className={`px-4 py-3 rounded-xl text-sm font-semibold transition ${
@@ -68,11 +69,11 @@ export default function AdminLogin() {
         <div className="space-y-4">
           <div>
             <label className="label block mb-1">{t("auth.username")}</label>
-            <input className="input" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input className="input" autoComplete="off" name="admin-login-uniq" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
           <div>
             <label className="label block mb-1">{t("auth.password")}</label>
-            <input type="password" className="input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full">
             {loading ? t("common.loading") : t("auth.login")}

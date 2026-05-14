@@ -26,7 +26,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-          <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center text-white">Z</span>
+          <img src="/logo.png" alt="ZAMAXSHAR" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.outerHTML = '<span class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center text-white">Z</span>'; }} />
           <span className="bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">{t("brand")}</span>
         </Link>
 
@@ -62,8 +62,10 @@ export default function Navbar() {
           <button onClick={toggle} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Theme toggle">
             {theme === "dark" ? "☀️" : "🌙"}
           </button>
-          <Link to="/admin/login" className="hidden sm:inline-flex btn-secondary text-xs">{t("nav.adminLogin")}</Link>
-          <Link to="/student/login" className="hidden sm:inline-flex btn-primary text-xs">{t("nav.studentLogin")}</Link>
+          <Link to="/admin/login" className="btn-secondary text-xs px-2 sm:px-3 whitespace-nowrap">{t("nav.adminLogin")}</Link>
+          <Link to="/student/login" className="btn-primary text-xs px-2 sm:px-3 whitespace-nowrap">{t("nav.studentLogin")}</Link>
+          <Link to="/teacher/login" className="text-xs px-2 sm:px-3 py-2 rounded-xl font-semibold text-white whitespace-nowrap shadow"
+                style={{ background: "linear-gradient(135deg, #3b82f6, #4f46e5)" }}>O'qituvchi</Link>
           <button className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setOpen(!open)}>
             ☰
           </button>
