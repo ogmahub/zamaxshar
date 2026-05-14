@@ -266,7 +266,9 @@ export const autoSeedIfEmpty = async () => {
   ]);
 
   await Student.create({
-    firstName: "Ali", lastName: "Valiyev", phone: "+998901111111",
+    firstName: "Ali", lastName: "Valiyev",
+    username: "ali",
+    phone: "+998901111111",
     passwordHash: await hashPassword("12345"),
     course: courses[0]._id, teacher: teachers[0]._id,
     paymentStatus: "paid",
@@ -274,7 +276,15 @@ export const autoSeedIfEmpty = async () => {
     validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
   });
 
+  // Birinchi ustozga login berib qo'yamiz (demo). Login = ism familiya ko'rinishida.
+  if (teachers[0]) {
+    teachers[0].username = teachers[0].name; // "Saodat Xolmatova"
+    teachers[0].passwordHash = await hashPassword("12345");
+    await teachers[0].save();
+  }
+
   console.log("Demo data tayyor.");
   console.log(`Admin: ${process.env.ADMIN_USERNAME || "admin"} / ${process.env.ADMIN_PASSWORD || "admin123"}`);
-  console.log("Student: +998901111111 / 12345");
+  console.log("Student: ali / 12345");
+  console.log(`Teacher: ${teachers[0]?.name || "Saodat Xolmatova"} / 12345`);
 };

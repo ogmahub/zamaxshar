@@ -1,6 +1,17 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/Admin.js";
 
+export const softAuth = (req, _res, next) => {
+  try {
+    const token = req.cookies?.token;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    }
+  } catch (_) { /* ignore */ }
+  next();
+};
+
 export const protect = (allowedRoles = []) => {
   return (req, res, next) => {
     try {

@@ -1,40 +1,23 @@
 import mongoose from "mongoose";
 
-const tryConnect = async (uri, label) => {
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 4000 });
-  console.log(`MongoDB connected (${label})`);
-};
-
-const startMemoryServer = async () => {
-  const { MongoMemoryServer } = await import("mongodb-memory-server");
-  const mem = await MongoMemoryServer.create({
-    instance: { dbName: "zamaxshar" }
-  });
-  const uri = mem.getUri();
-  await tryConnect(uri, "in-memory");
-  return mem;
-};
-
 export const connectDB = async () => {
   const uri = process.env.MONGO_URI;
 
-  if (uri && !uri.includes("127.0.0.1") && !uri.includes("localhost")) {
+  if (uri) {
     try {
-      await tryConnect(uri, "atlas");
+      await mongoose.connect(uri);
+      console.log("MongoDB connected (Atlas)");
       return;
     } catch (error) {
-      console.warn(`Atlas connection failed: ${error.message}`);
-      console.warn("Falling back to in-memory MongoDB...");
-    }
-  } else if (uri) {
-    try {
-      await tryConnect(uri, "local");
-      return;
-    } catch (error) {
-      console.warn(`Local MongoDB not running: ${error.message}`);
-      console.warn("Falling back to in-memory MongoDB...");
+      console.warn("MongoDB Atlas connection failed, using in-memory MongoDB");
+      console.warn("For production, ensure MONGO_URI is correct and IP is whitelisted");
     }
   }
 
-  await startMemoryServer();
+  // Fallback to in-memory for deployment
+  const { MongoMemoryServer } = await import("mongodb-memory-server");
+  const mem = await MongoMemoryServer.create();
+  await mongoose.connect(mem.getUri());
+  console.log("MongoDB connected (in-memory)");
+  return mem;
 };

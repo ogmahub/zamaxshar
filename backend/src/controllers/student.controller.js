@@ -3,8 +3,10 @@ import { hashPassword } from "../utils/hashPassword.js";
 
 export const listStudents = async (req, res) => {
   try {
+    const isAdmin = req.user?.role === "admin";
+    const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
     const students = await Student.find()
-      .select("-passwordHash")
+      .select(projection)
       .populate("course teacher")
       .sort({ createdAt: -1 });
     res.json(students);
@@ -15,8 +17,10 @@ export const listStudents = async (req, res) => {
 
 export const getStudent = async (req, res) => {
   try {
+    const isAdmin = req.user?.role === "admin";
+    const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
     const student = await Student.findById(req.params.id)
-      .select("-passwordHash")
+      .select(projection)
       .populate("course teacher");
     if (!student) return res.status(404).json({ error: "Student topilmadi" });
     res.json(student);
@@ -28,8 +32,9 @@ export const getStudent = async (req, res) => {
 export const createStudent = async (req, res) => {
   try {
     const { password, ...rest } = req.body;
-    const passwordHash = await hashPassword(password || "12345");
-    const student = await Student.create({ ...rest, passwordHash });
+    const pwd = password || "12345";
+    const passwordHash = await hashPassword(pwd);
+    const student = await Student.create({ ...rest, passwordHash, passwordPlain: pwd });
     res.status(201).json(student);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -40,7 +45,10 @@ export const updateStudent = async (req, res) => {
   try {
     const { password, ...rest } = req.body;
     const update = { ...rest };
-    if (password) update.passwordHash = await hashPassword(password);
+    if (password) {
+      update.passwordHash = await hashPassword(password);
+      update.passwordPlain = password;
+    }
 
     const student = await Student.findByIdAndUpdate(req.params.id, update, { new: true })
       .select("-passwordHash")
@@ -65,7 +73,7 @@ export const deleteStudent = async (req, res) => {
 export const myProfile = async (req, res) => {
   try {
     const student = await Student.findById(req.user.id)
-      .select("-passwordHash")
+      .select("-passwordHash -passwordPlain")
       .populate("course teacher");
     if (!student) return res.status(404).json({ error: "Student topilmadi" });
     res.json(student);
