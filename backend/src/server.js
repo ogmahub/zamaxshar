@@ -26,7 +26,8 @@ await autoSeedIfEmpty();
 app.use(cors({
   origin: [
     process.env.CLIENT_URL || "http://localhost:5173",
-    "http://10.111.74.219:5173"
+    "http://10.111.74.219:5173",
+    "https://zamaxshar.vercel.app"
   ],
   credentials: true
 }));
