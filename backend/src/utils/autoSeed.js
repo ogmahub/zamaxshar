@@ -11,8 +11,8 @@ export const autoSeedIfEmpty = async () => {
   console.log("DB bo'sh, demo ma'lumotlar yaratilmoqda...");
 
   await Admin.create({
-    username: process.env.ADMIN_USERNAME || "admin",
-    passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || "admin123"),
+    username: process.env.ADMIN_USERNAME || "ZAMAXSHAR12",
+    passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || "zamaxshar"),
     isSuperAdmin: true,
     permissions: ["applications", "students", "teachers", "admins"]
   });
@@ -284,7 +284,7 @@ export const autoSeedIfEmpty = async () => {
   }
 
   console.log("Demo data tayyor.");
-  console.log(`Admin: ${process.env.ADMIN_USERNAME || "admin"} / ${process.env.ADMIN_PASSWORD || "admin123"}`);
+  console.log(`Admin: ${process.env.ADMIN_USERNAME || "ZAMAXSHAR12"} / ${process.env.ADMIN_PASSWORD || "zamaxshar"}`);
   console.log("Student: ali / 12345");
   console.log(`Teacher: ${teachers[0]?.name || "Saodat Xolmatova"} / 12345`);
 };
