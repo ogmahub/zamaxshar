@@ -6,8 +6,7 @@
     "teachers": "Учителя",
     "register": "Регистрация",
     "contact": "Контакты",
-    "adminLogin": "Супер Админ",
-    "studentLogin": "Студент"
+    "login": "Войти"
   },
   "hero": {
     "title": "Путь к знаниям - учебный центр ZAMAXSHAR",
@@ -66,7 +65,15 @@
     "login": "Войти",
     "logout": "Выйти",
     "adminLogin": "Вход админ",
-    "studentLogin": "Вход студент"
+    "studentLogin": "Вход студент",
+    "teacherLogin": "Вход учитель",
+    "loginPage": {
+      "title": "Вход в систему",
+      "subtitle": "Выберите свою роль",
+      "adminRole": "Админ",
+      "studentRole": "Студент",
+      "teacherRole": "Учитель"
+    }
   },
   "admin": {
     "dashboard": "Панель",

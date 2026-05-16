@@ -6,6 +6,7 @@ import CourseDetail from "./pages/CourseDetail.jsx";
 import Teachers from "./pages/Teachers.jsx";
 import Register from "./pages/Register.jsx";
 import Contact from "./pages/Contact.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 
 import AdminLogin from "./admin/AdminLogin.jsx";
 import AdminLayout from "./admin/AdminLayout.jsx";
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<LoginPage />} />
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />

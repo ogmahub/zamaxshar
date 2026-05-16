@@ -23,12 +23,20 @@ const PORT = process.env.PORT || 5000;
 await connectDB();
 await autoSeedIfEmpty();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://10.111.74.219:5173",
+  "https://zamaxshar.vercel.app",
+  "https://zamaxshar.netlify.app",
+];
+if (process.env.CLIENT_URL) allowedOrigins.push(process.env.CLIENT_URL);
+
 app.use(cors({
-  origin: [
-    process.env.CLIENT_URL || "http://localhost:5173",
-    "http://10.111.74.219:5173",
-    "https://zamaxshar.vercel.app"
-  ],
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: ${origin} ruxsatsiz`));
+  },
   credentials: true
 }));
 app.use(express.json({ limit: "10mb" }));

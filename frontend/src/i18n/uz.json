@@ -6,8 +6,7 @@
     "teachers": "Ustozlar",
     "register": "Ro'yxatdan o'tish",
     "contact": "Aloqa",
-    "adminLogin": "Super Admin",
-    "studentLogin": "Talaba"
+    "login": "Kirish"
   },
   "hero": {
     "title": "Bilimga yo'l - ZAMAXSHAR o'quv markazi",
@@ -66,7 +65,15 @@
     "login": "Kirish",
     "logout": "Chiqish",
     "adminLogin": "Admin kirish",
-    "studentLogin": "Talaba kirish"
+    "studentLogin": "Talaba kirish",
+    "teacherLogin": "Ustoz kirish",
+    "loginPage": {
+      "title": "Tizimga kirish",
+      "subtitle": "O'zingizga mos rolni tanlang",
+      "adminRole": "Admin",
+      "studentRole": "Talaba",
+      "teacherRole": "Ustoz"
+    }
   },
   "admin": {
     "dashboard": "Dashboard",

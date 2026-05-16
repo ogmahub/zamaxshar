@@ -13,7 +13,7 @@ export default function AdminLayout() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/admin/login");
+    navigate("/login");
   };
 
   const isSuper = !!user?.isSuperAdmin;
