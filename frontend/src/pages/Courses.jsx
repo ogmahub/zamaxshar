@@ -8,7 +8,7 @@ export default function Courses() {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    api.get("/api/courses").then((r) => setCourses(r.data)).catch(() => {});
+    api.get("/courses").then((r) => setCourses(r.data)).catch(() => {});
   }, []);
 
   return (
