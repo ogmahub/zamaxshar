@@ -237,7 +237,7 @@ export default function TeachersAdmin() {
 
                 <div className="flex items-center gap-2">
                   <input id="active" type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
-                  <label htmlFor="active" className="text-sm">Active</label>
+                  <label htmlFor="active" className="text-sm">Faol</label>
                 </div>
 
                 <div className="flex gap-3 justify-end pt-2">

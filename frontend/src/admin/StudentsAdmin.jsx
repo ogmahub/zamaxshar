@@ -9,6 +9,12 @@ const PAYMENT_COLORS = {
   expired: "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300"
 };
 
+const PAYMENT_LABELS = {
+  paid: "To'langan",
+  unpaid: "To'lanmagan",
+  expired: "Muddati tugagan"
+};
+
 const toISODate = (d) => d.toISOString().slice(0, 10);
 const addDays = (date, days) => { const d = new Date(date); d.setDate(d.getDate() + days); return d; };
 const makeBlank = () => {
@@ -100,7 +106,7 @@ export default function StudentsAdmin() {
                   <td className="px-4 py-3">{s.teacher?.name || "—"}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${PAYMENT_COLORS[s.paymentStatus]}`}>
-                      {t(`status.${s.paymentStatus}`)}
+                      {PAYMENT_LABELS[s.paymentStatus] || s.paymentStatus}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
@@ -163,9 +169,9 @@ export default function StudentsAdmin() {
               <div>
                 <label className="label block mb-1">To'lov</label>
                 <select className="input" value={form.paymentStatus} onChange={(e) => setForm({ ...form, paymentStatus: e.target.value })}>
-                  <option value="unpaid">unpaid</option>
-                  <option value="paid">paid</option>
-                  <option value="expired">expired</option>
+                  <option value="unpaid">To'lanmagan</option>
+                  <option value="paid">To'langan</option>
+                  <option value="expired">Muddati tugagan</option>
                 </select>
               </div>
               <div>
