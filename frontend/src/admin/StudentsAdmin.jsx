@@ -45,6 +45,7 @@ export default function StudentsAdmin() {
     try {
       const payload = { ...form };
       if (editing && !payload.password) delete payload.password;
+      if (editing && !payload.phone) delete payload.phone;
       if (editing) await api.put(`/students/${editing}`, payload);
       else await api.post("/students", payload);
       toast.success("Saqlandi");
@@ -62,7 +63,7 @@ export default function StudentsAdmin() {
   const startEdit = (s) => {
     setEditing(s._id);
     setForm({
-      firstName: s.firstName, lastName: s.lastName || "", username: s.username || "", phone: s.phone || "", password: s.passwordPlain || "",
+      firstName: s.firstName, lastName: s.lastName || "", username: s.username || "", phone: "", password: s.passwordPlain || "",
       course: s.course?._id || "", teacher: s.teacher?._id || "",
       paymentStatus: s.paymentStatus,
       validFrom: s.validFrom ? s.validFrom.slice(0, 10) : "",
@@ -128,14 +129,14 @@ export default function StudentsAdmin() {
               </div>
               <div>
                 <label className="label block mb-1">Telefon</label>
-                <div className="flex">
-                  <span className="px-3 grid place-items-center rounded-l-xl border border-r-0 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 font-semibold text-sm text-slate-600 dark:text-slate-300">+998</span>
+                <div className="relative w-full">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-brand-600 text-white font-semibold text-sm pointer-events-none">+998</span>
                   <input
-                    className="input rounded-l-none flex-1"
+                    className="input w-full pl-24"
                     required
                     inputMode="numeric"
                     maxLength={9}
-                    placeholder="901234567"
+                    placeholder="Telefon raqam"
                     value={form.phone.replace(/^\+998/, "")}
                     onChange={(e) => {
                       const digits = e.target.value.replace(/\D/g, "").slice(0, 9);

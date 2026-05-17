@@ -23,6 +23,7 @@ export default function TeachersAdmin() {
       const payload = { ...form, phone: form.phone ? (form.phone.startsWith("+") ? form.phone : `+998${form.phone}`) : "" };
       if (!payload.password) delete payload.password;
       if (!payload.username) delete payload.username;
+      if (editing && editing !== "new" && !payload.phone) delete payload.phone;
       if (editing && editing !== "new") await api.put(`/teachers/${editing}`, payload);
       else await api.post("/teachers", payload);
       toast.success("Saqlandi");
@@ -39,8 +40,7 @@ export default function TeachersAdmin() {
 
   const startEdit = (tc) => {
     setEditing(tc._id);
-    const phone = (tc.phone || "").replace("+998", "");
-    setForm({ ...tc, phone, password: tc.passwordPlain || "" });
+    setForm({ ...tc, phone: "", password: tc.passwordPlain || "" });
   };
 
   const handleFile = (key) => (e) => {
@@ -147,11 +147,13 @@ export default function TeachersAdmin() {
                   </div>
                   <div>
                     <label className="text-sm text-slate-600 dark:text-slate-400 block mb-1.5">Telefon raqam</label>
-                    <div className="flex gap-2">
-                      <div className="px-4 py-3 rounded-xl bg-violet-600 text-white font-semibold text-sm grid place-items-center">+998</div>
+                    <div className="relative w-full">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-violet-600 text-white font-semibold text-sm pointer-events-none">
+                        +998
+                      </span>
                       <input
-                        className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
-                        placeholder="901234567"
+                        className="w-full pl-24 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
+                        placeholder="Telefon raqam"
                         inputMode="numeric"
                         maxLength={9}
                         value={form.phone}
