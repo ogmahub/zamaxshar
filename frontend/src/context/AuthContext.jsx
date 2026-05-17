@@ -51,7 +51,11 @@ export const AuthProvider = ({ children }) => {
         const { data } = await api.post(ep.url, { username, password });
         setUser(data.user);
         return { success: true, role: ep.role, user: data.user };
-      } catch {}
+      } catch (error) {
+        if (!error.response) {
+          return { success: false, message: "Server bilan aloqa yo'q yoki CORS xatosi" };
+        }
+      }
     }
     return { success: false, message: "Login yoki parol noto'g'ri" };
   };

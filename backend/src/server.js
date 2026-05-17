@@ -34,7 +34,8 @@ if (process.env.CLIENT_URL) allowedOrigins.push(process.env.CLIENT_URL);
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    const isLocalPreview = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin || "");
+    if (!origin || allowedOrigins.includes(origin) || isLocalPreview) return cb(null, true);
     cb(new Error(`CORS: ${origin} ruxsatsiz`));
   },
   credentials: true
