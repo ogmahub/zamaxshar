@@ -54,8 +54,8 @@ export default function Footer() {
           {/* Brand col */}
           <div className="md:col-span-4">
             <Link to="/" className="inline-flex items-center gap-2.5 mb-5 group">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center shadow-lg shadow-brand-500/30">
-                <span className="text-white font-black text-base">Z</span>
+              <div className="w-11 h-11 rounded-2xl grid place-items-center shadow-lg shadow-black/30 overflow-hidden">
+                <img src="/logo.svg" alt="ZAMAXSHAR" className="w-full h-full object-cover" />
               </div>
               <div>
                 <div className="font-black text-lg text-white tracking-tight">ZAMAXSHAR</div>

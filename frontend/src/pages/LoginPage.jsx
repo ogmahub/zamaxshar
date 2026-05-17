@@ -49,8 +49,8 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center mx-auto mb-4 shadow-xl shadow-brand-500/30">
-            <span className="text-white font-black text-xl">Z</span>
+          <div className="w-16 h-16 rounded-3xl grid place-items-center mx-auto mb-4 shadow-xl shadow-black/20 overflow-hidden">
+            <img src="/logo.svg" alt="ZAMAXSHAR" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white">
             {t("auth.loginPage.title")}

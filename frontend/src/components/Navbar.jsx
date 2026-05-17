@@ -43,12 +43,11 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center shadow-md shadow-brand-500/30 group-hover:shadow-brand-500/50 transition-all duration-300 group-hover:scale-105 overflow-hidden">
+          <div className="w-10 h-10 rounded-2xl grid place-items-center shadow-md shadow-black/20 group-hover:shadow-brand-500/30 transition-all duration-300 group-hover:scale-105 overflow-hidden">
             <img
-              src="/logo.png"
-              alt="Z"
+              src="/logo.svg"
+              alt="ZAMAXSHAR"
               className="w-full h-full object-cover rounded-2xl"
-              onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.parentElement.innerHTML += '<span class="text-white font-black text-sm">Z</span>'; }}
             />
           </div>
           <span className="font-black text-lg tracking-tight gradient-text">{t("brand")}</span>

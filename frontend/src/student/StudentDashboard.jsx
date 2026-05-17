@@ -31,7 +31,7 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2 font-bold">
-          <img src="/logo.png" alt="ZAMAXSHAR" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.outerHTML = '<span class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 grid place-items-center text-white">Z</span>'; }} />
+          <img src="/logo.svg" alt="ZAMAXSHAR" className="w-10 h-10 rounded-2xl object-cover" />
           ZAMAXSHAR
         </div>
         <div className="flex items-center gap-2">
