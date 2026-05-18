@@ -12,6 +12,14 @@ const STATUS_COLORS = {
 
 const DEFAULT_TEACHER_NAME = "laziz lazizev";
 
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+const addDaysISO = (dateStr, days) => {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+
 const pickDefaultTeacherId = (items) =>
   items.find((tc) => (tc.name || "").trim().toLowerCase() === DEFAULT_TEACHER_NAME)?._id ||
   items[0]?._id ||
@@ -22,7 +30,12 @@ export default function Applications() {
   const [apps, setApps] = useState([]);
   const [convertId, setConvertId] = useState(null);
   const [teachers, setTeachers] = useState([]);
-  const [convertForm, setConvertForm] = useState({ password: "12345", teacher: "", validFrom: "", validUntil: "" });
+  const [convertForm, setConvertForm] = useState({
+    password: "12345",
+    teacher: "",
+    validFrom: todayISO(),
+    validUntil: addDaysISO(todayISO(), 30)
+  });
 
   const load = async () => {
     try {
@@ -114,7 +127,21 @@ export default function Applications() {
                       </>
                     )}
                     {a.status === "accepted" && (
-                      <button onClick={() => { setConvertId(a._id); setConvertForm({ password: "12345", teacher: pickDefaultTeacherId(teachers), validFrom: new Date().toISOString().slice(0,10), validUntil: "" }); }} className="text-violet-600 hover:underline">→ Student</button>
+                      <button
+                        onClick={() => {
+                          const start = todayISO();
+                          setConvertId(a._id);
+                          setConvertForm({
+                            password: "12345",
+                            teacher: pickDefaultTeacherId(teachers),
+                            validFrom: start,
+                            validUntil: addDaysISO(start, 30)
+                          });
+                        }}
+                        className="text-violet-600 hover:underline"
+                      >
+                        → Student
+                      </button>
                     )}
                     <button onClick={() => remove(a._id)} className="text-slate-500 hover:text-rose-600">🗑</button>
                   </td>
@@ -146,7 +173,19 @@ export default function Applications() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="label block mb-1">Boshlanish</label>
-                <input type="date" className="input" value={convertForm.validFrom} onChange={(e) => setConvertForm({ ...convertForm, validFrom: e.target.value })} />
+                <input
+                  type="date"
+                  className="input"
+                  value={convertForm.validFrom}
+                  onChange={(e) => {
+                    const start = e.target.value;
+                    setConvertForm((s) => ({
+                      ...s,
+                      validFrom: start,
+                      validUntil: start ? addDaysISO(start, 30) : s.validUntil
+                    }));
+                  }}
+                />
               </div>
               <div>
                 <label className="label block mb-1">Tugash</label>
