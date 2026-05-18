@@ -10,6 +10,13 @@ const STATUS_COLORS = {
   converted_to_student: "bg-violet-100 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300"
 };
 
+const DEFAULT_TEACHER_NAME = "laziz lazizev";
+
+const pickDefaultTeacherId = (items) =>
+  items.find((tc) => (tc.name || "").trim().toLowerCase() === DEFAULT_TEACHER_NAME)?._id ||
+  items[0]?._id ||
+  "";
+
 export default function Applications() {
   const { t } = useTranslation();
   const [apps, setApps] = useState([]);
@@ -26,7 +33,15 @@ export default function Applications() {
 
   useEffect(() => {
     load();
-    api.get("/teachers").then((r) => setTeachers(r.data)).catch(() => {});
+    api.get("/teachers")
+      .then((r) => {
+        setTeachers(r.data);
+        setConvertForm((s) => ({
+          ...s,
+          teacher: s.teacher || pickDefaultTeacherId(r.data),
+        }));
+      })
+      .catch(() => {});
   }, []);
 
   const updateStatus = async (id, status) => {
@@ -99,7 +114,7 @@ export default function Applications() {
                       </>
                     )}
                     {a.status === "accepted" && (
-                      <button onClick={() => { setConvertId(a._id); setConvertForm({ password: "12345", teacher: "", validFrom: new Date().toISOString().slice(0,10), validUntil: "" }); }} className="text-violet-600 hover:underline">→ Student</button>
+                      <button onClick={() => { setConvertId(a._id); setConvertForm({ password: "12345", teacher: pickDefaultTeacherId(teachers), validFrom: new Date().toISOString().slice(0,10), validUntil: "" }); }} className="text-violet-600 hover:underline">→ Student</button>
                     )}
                     <button onClick={() => remove(a._id)} className="text-slate-500 hover:text-rose-600">🗑</button>
                   </td>
