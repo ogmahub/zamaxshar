@@ -4,8 +4,9 @@ import { hashPassword } from "../utils/hashPassword.js";
 export const listTeachers = async (req, res) => {
   try {
     const isAdmin = req.user?.role === "admin";
+    const filter = isAdmin ? {} : { isActive: true };
     const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
-    const teachers = await Teacher.find().select(projection).sort({ createdAt: -1 });
+    const teachers = await Teacher.find(filter).select(projection).sort({ createdAt: -1 });
     res.json(teachers);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -15,8 +16,9 @@ export const listTeachers = async (req, res) => {
 export const getTeacher = async (req, res) => {
   try {
     const isAdmin = req.user?.role === "admin";
+    const filter = isAdmin ? { _id: req.params.id } : { _id: req.params.id, isActive: true };
     const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
-    const teacher = await Teacher.findById(req.params.id).select(projection);
+    const teacher = await Teacher.findOne(filter).select(projection);
     if (!teacher) return res.status(404).json({ error: "Ustoz topilmadi" });
     res.json(teacher);
   } catch (error) {

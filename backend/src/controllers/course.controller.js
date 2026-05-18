@@ -2,7 +2,9 @@ import Course from "../models/Course.js";
 
 export const listCourses = async (req, res) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 });
+    const isAdmin = req.user?.role === "admin";
+    const filter = isAdmin ? {} : { isActive: true };
+    const courses = await Course.find(filter).sort({ createdAt: -1 });
     res.json(courses);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -11,7 +13,9 @@ export const listCourses = async (req, res) => {
 
 export const getCourse = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const isAdmin = req.user?.role === "admin";
+    const filter = isAdmin ? { _id: req.params.id } : { _id: req.params.id, isActive: true };
+    const course = await Course.findOne(filter);
     if (!course) return res.status(404).json({ error: "Kurs topilmadi" });
     res.json(course);
   } catch (error) {
