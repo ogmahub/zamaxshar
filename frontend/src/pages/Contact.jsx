@@ -8,9 +8,87 @@ const fadeUp = {
   }),
 };
 
+const CARD_LAYOUT = {
+  ring: {
+    phone: "bg-emerald-500/10",
+    telegram: "bg-sky-500/10",
+    location: "bg-violet-500/10",
+    time: "bg-amber-500/10",
+  }
+};
+
+const socialLinks = [
+  { label: "Instagram", href: "https://instagram.com/zamaxshar_tm", icon: "📸", bg: "linear-gradient(135deg, #feda75 0%, #d62976 50%, #4f5bd5 100%)", hint: "Daily postlar" },
+  { label: "Telegram", href: "https://t.me/Zamaxshar_TM", icon: "✈️", bg: "linear-gradient(135deg, #37bbfe, #007dbb)", hint: "Yangiliklar" },
+  { label: "YouTube", href: "https://youtube.com/@zamaxshar", icon: "▶️", bg: "linear-gradient(135deg, #ff4444, #cc0000)", hint: "Video darslar" },
+];
+
+function ContactCard({ item, i }) {
+  const accentKey = item.key;
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      custom={i}
+      variants={fadeUp}
+      className="group"
+    >
+      {item.href ? (
+        <a
+          href={item.href}
+          target={item.href.startsWith("http") ? "_blank" : undefined}
+          rel="noreferrer"
+          className="relative h-full overflow-hidden rounded-[30px] border border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 p-6 shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_30px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]"
+        >
+          <div className={`absolute -top-10 -right-10 h-32 w-32 rounded-full ${CARD_LAYOUT.ring[accentKey]} blur-2xl`} />
+          <div className="relative flex items-start gap-4">
+            <div className={`w-14 h-14 rounded-3xl bg-gradient-to-br ${item.color} shadow-lg shadow-black/10 grid place-items-center text-2xl shrink-0 ring-8 ring-white/70 dark:ring-slate-900/70`}>
+              {item.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-[11px] font-bold tracking-[0.22em] text-slate-500 dark:text-slate-400 uppercase">{item.label}</p>
+                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-300">
+                  Ochish
+                </span>
+              </div>
+              <p className="text-base font-extrabold leading-snug text-slate-900 dark:text-white break-words">
+                {item.value}
+              </p>
+              <div className="mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-800" />
+            </div>
+          </div>
+        </a>
+      ) : (
+        <div className="relative h-full overflow-hidden rounded-[30px] border border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 p-6 shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_30px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
+          <div className={`absolute -top-10 -right-10 h-32 w-32 rounded-full ${CARD_LAYOUT.ring[accentKey]} blur-2xl`} />
+          <div className="relative flex items-start gap-4">
+            <div className={`w-14 h-14 rounded-3xl bg-gradient-to-br ${item.color} shadow-lg shadow-black/10 grid place-items-center text-2xl shrink-0 ring-8 ring-white/70 dark:ring-slate-900/70`}>
+              {item.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-[11px] font-bold tracking-[0.22em] text-slate-500 dark:text-slate-400 uppercase">{item.label}</p>
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+                  Ma'lumot
+                </span>
+              </div>
+              <p className="text-base font-extrabold leading-snug text-slate-900 dark:text-white break-words">
+                {item.value}
+              </p>
+              <div className="mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-800" />
+            </div>
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
 export default function Contact() {
   const contacts = [
     {
+      key: "phone",
       icon: "📞",
       label: "Telefon",
       value: "+998 90 893 00 02",
@@ -18,6 +96,7 @@ export default function Contact() {
       color: "from-brand-400 to-brand-600",
     },
     {
+      key: "telegram",
       icon: "✈️",
       label: "Telegram",
       value: "@zamaxshar_admin",
@@ -25,6 +104,7 @@ export default function Contact() {
       color: "from-sky-400 to-blue-600",
     },
     {
+      key: "location",
       icon: "📍",
       label: "Manzil",
       value: "Qashqadaryo, Qamashi tumani, Amir Temur ko'chasi",
@@ -32,6 +112,7 @@ export default function Contact() {
       color: "from-violet-400 to-violet-600",
     },
     {
+      key: "time",
       icon: "🕐",
       label: "Ish vaqti",
       value: "Du–Sha: 09:00 – 18:00",
@@ -40,15 +121,11 @@ export default function Contact() {
     },
   ];
 
-  const socials = [
-    { label: "Instagram", href: "https://instagram.com/zamaxshar_tm", icon: "📸", bg: "linear-gradient(135deg, #feda75 0%, #d62976 50%, #4f5bd5 100%)" },
-    { label: "Telegram", href: "https://t.me/Zamaxshar_TM", icon: "✈️", bg: "linear-gradient(135deg, #37bbfe, #007dbb)" },
-    { label: "YouTube", href: "https://youtube.com/@zamaxshar", icon: "▶️", bg: "linear-gradient(135deg, #ff4444, #cc0000)" },
-  ];
-
   return (
     <div className="relative overflow-hidden">
-      <div className="absolute top-[-15%] left-[-5%] w-[500px] h-[500px] rounded-full bg-brand-400/10 dark:bg-brand-500/6 blur-[100px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-[#08111f] dark:via-[#091122] dark:to-[#050914]" />
+      <div className="absolute top-[-15%] left-[-5%] w-[500px] h-[500px] rounded-full bg-brand-400/10 dark:bg-brand-500/8 blur-[110px] pointer-events-none" />
+      <div className="absolute bottom-[-12%] right-[-8%] w-[420px] h-[420px] rounded-full bg-violet-400/10 dark:bg-violet-500/8 blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
 
@@ -69,38 +146,9 @@ export default function Contact() {
         </motion.div>
 
         {/* Contact cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-16">
           {contacts.map((c, i) => (
-            <motion.div
-              key={c.label}
-              initial="hidden"
-              animate="visible"
-              custom={i}
-              variants={fadeUp}
-            >
-              {c.href ? (
-                <a
-                  href={c.href}
-                  target={c.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="card p-6 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/60 dark:hover:shadow-black/40 transition-all duration-500 block"
-                >
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${c.color} grid place-items-center text-2xl mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                    {c.icon}
-                  </div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">{c.label}</p>
-                  <p className="font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors text-sm leading-relaxed">{c.value}</p>
-                </a>
-              ) : (
-                <div className="card p-6 group hover:-translate-y-2 hover:shadow-xl hover:shadow-slate-200/60 dark:hover:shadow-black/40 transition-all duration-500">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${c.color} grid place-items-center text-2xl mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                    {c.icon}
-                  </div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">{c.label}</p>
-                  <p className="font-bold text-slate-900 dark:text-white text-sm leading-relaxed">{c.value}</p>
-                </div>
-              )}
-            </motion.div>
+            <ContactCard key={c.label} item={c} i={i} />
           ))}
         </div>
 
@@ -115,8 +163,8 @@ export default function Contact() {
           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6">
             Ijtimoiy tarmoqlar
           </p>
-          <div className="flex items-center justify-center gap-4">
-            {socials.map((s) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {socialLinks.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
@@ -124,9 +172,15 @@ export default function Contact() {
                 rel="noreferrer"
                 aria-label={s.label}
                 style={{ background: s.bg }}
-                className="w-14 h-14 rounded-3xl grid place-items-center text-2xl shadow-lg hover:scale-110 hover:-translate-y-1 transition-all duration-300"
+                className="group flex items-center gap-4 rounded-[26px] p-4 text-left shadow-[0_12px_30px_rgba(15,23,42,0.14)] hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(15,23,42,0.2)] transition-all duration-300"
               >
-                {s.icon}
+                <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm grid place-items-center text-2xl shadow-inner shrink-0">
+                  {s.icon}
+                </div>
+                <div className="min-w-0 flex-1 text-white">
+                  <p className="text-xs font-bold uppercase tracking-[0.25em] opacity-80 mb-1">{s.label}</p>
+                  <p className="font-extrabold text-lg leading-tight">{s.hint}</p>
+                </div>
               </a>
             ))}
           </div>
