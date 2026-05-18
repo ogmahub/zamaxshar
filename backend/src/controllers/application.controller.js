@@ -2,6 +2,22 @@ import Application from "../models/Application.js";
 import Student from "../models/Student.js";
 import { hashPassword } from "../utils/hashPassword.js";
 
+const makeUsername = async (firstName, lastName, phone) => {
+  const base = `${firstName || "student"}${lastName || ""}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "") || "student";
+  const suffix = (phone || "").replace(/\D/g, "").slice(-4) || String(Date.now()).slice(-4);
+  let username = `${base}${suffix}`;
+  let counter = 1;
+
+  while (await Student.findOne({ username })) {
+    username = `${base}${suffix}${counter}`;
+    counter += 1;
+  }
+
+  return username;
+};
+
 export const createApplication = async (req, res) => {
   try {
     const app = await Application.create(req.body);
@@ -60,10 +76,12 @@ export const convertToStudent = async (req, res) => {
     if (existing) return res.status(400).json({ error: "Bu telefon bilan student mavjud" });
 
     const passwordHash = await hashPassword(password || "12345");
+    const username = await makeUsername(app.firstName, app.lastName, app.phone);
 
     const student = await Student.create({
       firstName: app.firstName,
       lastName: app.lastName,
+      username,
       phone: app.phone,
       passwordHash,
       course: app.course,
