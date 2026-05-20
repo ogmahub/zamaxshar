@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
 import { connectDB } from "./config/db.js";
+import { autoSeedIfEmpty } from "./utils/autoSeed.js";
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 import authRoutes from "./routes/auth.routes.js";
@@ -21,6 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 await connectDB();
+await autoSeedIfEmpty();
 
 const allowedOrigins = [
   "http://localhost:5173",

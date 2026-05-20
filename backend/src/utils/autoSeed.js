@@ -3,20 +3,24 @@ import Course from "../models/Course.js";
 import { hashPassword } from "./hashPassword.js";
 
 export const autoSeedIfEmpty = async () => {
+  const adminCount = await Admin.countDocuments();
+  if (adminCount === 0) {
+    console.log("Super Admin topilmadi, yaratilmoqda...");
+    await Admin.create({
+      username: process.env.ADMIN_USERNAME || "ZAMAXSHAR12",
+      passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || "zamaxshar"),
+      isSuperAdmin: true,
+      permissions: ["applications", "students", "teachers", "admins"]
+    });
+    console.log(`Super Admin yaratildi: ${process.env.ADMIN_USERNAME || "ZAMAXSHAR12"}`);
+  }
+
   if (process.env.ENABLE_AUTO_SEED !== "true") return;
 
-  const adminCount = await Admin.countDocuments();
-  if (adminCount > 0) return;
+  const courseCount = await Course.countDocuments();
+  if (courseCount > 0) return;
 
-  console.log("DB bo'sh, demo ma'lumotlar yaratilmoqda...");
-
-  await Admin.create({
-    username: process.env.ADMIN_USERNAME || "ZAMAXSHAR12",
-    passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || "zamaxshar"),
-    isSuperAdmin: true,
-    permissions: ["applications", "students", "teachers", "admins"]
-  });
-
+  console.log("DB bo'sh, demo kurslar yaratilmoqda...");
   const courses = await Course.insertMany([
     {
       titleUz: "Ona tili", titleRu: "Родной язык", titleEn: "Native Language",
