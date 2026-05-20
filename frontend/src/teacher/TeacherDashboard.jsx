@@ -196,8 +196,9 @@ export default function TeacherDashboard() {
               <div>
                 <label className="label block mb-1">Boshlanish vaqti</label>
                 <input
-                  type="time"
-                  step="60"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={5}
                   className="input"
                   value={groupForm.lessonStartTime}
                   onChange={(e) => setGroupForm((s) => ({ ...s, lessonStartTime: e.target.value }))}
@@ -206,8 +207,9 @@ export default function TeacherDashboard() {
               <div>
                 <label className="label block mb-1">Tugash vaqti</label>
                 <input
-                  type="time"
-                  step="60"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={5}
                   className="input"
                   value={groupForm.lessonEndTime}
                   onChange={(e) => setGroupForm((s) => ({ ...s, lessonEndTime: e.target.value }))}
