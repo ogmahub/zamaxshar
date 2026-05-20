@@ -82,17 +82,6 @@ export default function TeachersAdmin() {
     }
   };
 
-  const clearAll = async () => {
-    if (!confirm("Hamma ustozlar o'chirilsinmi? Bu amal qaytarib bo'lmaydi.")) return;
-    try {
-      await api.delete("/teachers/clear");
-      toast.success("Barcha ustozlar o'chirildi");
-      load();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Xato");
-    }
-  };
-
   const startEdit = (tc) => {
     setEditing(tc._id);
     setForm({ ...tc, phone: "", password: tc.passwordPlain || "" });
@@ -112,11 +101,6 @@ export default function TeachersAdmin() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl md:text-3xl font-bold">{t("admin.teachers")}</h1>
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          {canDelete && (
-            <button onClick={clearAll} className="btn-secondary border border-rose-300 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-900/20">
-              Hammasini o'chirish
-            </button>
-          )}
           {canCreate && (
             <button onClick={() => { setEditing("new"); setForm(blank); }} className="btn-primary">+ Yangi</button>
           )}
