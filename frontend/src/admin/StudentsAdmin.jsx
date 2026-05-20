@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
 import api from "../api/axios.js";
 
 const PAYMENT_COLORS = {
@@ -21,6 +22,7 @@ const makeBlank = () => {
   const today = new Date();
   return {
     firstName: "", lastName: "", username: "", phone: "", password: "", course: "", teacher: "",
+    group: "", lessonStartTime: "", lessonEndTime: "",
     paymentStatus: "unpaid",
     validFrom: toISODate(today),
     validUntil: toISODate(addDays(today, 30))
@@ -30,11 +32,14 @@ const blank = makeBlank();
 
 export default function StudentsAdmin() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(blank);
+  const paymentFilter = searchParams.get("payment");
+  const filteredItems = paymentFilter ? items.filter((student) => student.paymentStatus === paymentFilter) : items;
 
   const load = async () => {
     try { setItems((await api.get("/students")).data); } catch {}
@@ -71,6 +76,7 @@ export default function StudentsAdmin() {
     setForm({
       firstName: s.firstName, lastName: s.lastName || "", username: s.username || "", phone: "", password: s.passwordPlain || "",
       course: s.course?._id || "", teacher: s.teacher?._id || "",
+      group: s.group || "", lessonStartTime: s.lessonStartTime || "", lessonEndTime: s.lessonEndTime || "",
       paymentStatus: s.paymentStatus,
       validFrom: s.validFrom ? s.validFrom.slice(0, 10) : "",
       validUntil: s.validUntil ? s.validUntil.slice(0, 10) : ""
@@ -84,6 +90,15 @@ export default function StudentsAdmin() {
         <button onClick={() => { setEditing("new"); setForm(makeBlank()); }} className="btn-primary">+ Yangi</button>
       </div>
 
+      {paymentFilter && (
+        <div className="mb-4 flex items-center gap-2 text-sm">
+          <span className="px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 font-medium">
+            {paymentFilter === "paid" ? "To'langan talabalar" : paymentFilter === "unpaid" ? "To'lanmagan talabalar" : paymentFilter}
+          </span>
+          <span className="text-slate-500">({filteredItems.length})</span>
+        </div>
+      )}
+
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -93,17 +108,21 @@ export default function StudentsAdmin() {
                 <th className="px-4 py-3 text-left">Telefon</th>
                 <th className="px-4 py-3 text-left">Kurs</th>
                 <th className="px-4 py-3 text-left">Ustoz</th>
+                <th className="px-4 py-3 text-left">Guruh</th>
+                <th className="px-4 py-3 text-left">Vaqt</th>
                 <th className="px-4 py-3 text-left">To'lov</th>
                 <th className="px-4 py-3 text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
-              {items.map((s) => (
+              {filteredItems.map((s) => (
                 <tr key={s._id} className="border-t border-slate-200 dark:border-slate-800">
                   <td className="px-4 py-3 font-medium">{s.firstName} {s.lastName}</td>
                   <td className="px-4 py-3">{s.phone}</td>
                   <td className="px-4 py-3">{s.course?.titleUz || "—"}</td>
                   <td className="px-4 py-3">{s.teacher?.name || "—"}</td>
+                  <td className="px-4 py-3">{s.group || "—"}</td>
+                  <td className="px-4 py-3">{s.lessonStartTime && s.lessonEndTime ? `${s.lessonStartTime} - ${s.lessonEndTime}` : "—"}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${PAYMENT_COLORS[s.paymentStatus]}`}>
                       {PAYMENT_LABELS[s.paymentStatus] || s.paymentStatus}
@@ -115,7 +134,7 @@ export default function StudentsAdmin() {
                   </td>
                 </tr>
               ))}
-              {items.length === 0 && <tr><td colSpan="6" className="px-4 py-10 text-center text-slate-500">{t("common.noData")}</td></tr>}
+              {filteredItems.length === 0 && <tr><td colSpan="8" className="px-4 py-10 text-center text-slate-500">{t("common.noData")}</td></tr>}
             </tbody>
           </table>
         </div>
@@ -165,6 +184,36 @@ export default function StudentsAdmin() {
                   <option value="">—</option>
                   {teachers.map((tc) => <option key={tc._id} value={tc._id}>{tc.name}</option>)}
                 </select>
+              </div>
+              <div>
+                <label className="label block mb-1">Guruh</label>
+                <input className="input" placeholder="Masalan: 1-guruh" value={form.group || ""} onChange={(e) => setForm({ ...form, group: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label block mb-1">Boshlanish</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    className="input"
+                    placeholder="08:00"
+                    value={form.lessonStartTime || ""}
+                    onChange={(e) => setForm({ ...form, lessonStartTime: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="label block mb-1">Tugash</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    className="input"
+                    placeholder="09:30"
+                    value={form.lessonEndTime || ""}
+                    onChange={(e) => setForm({ ...form, lessonEndTime: e.target.value })}
+                  />
+                </div>
               </div>
               <div>
                 <label className="label block mb-1">To'lov</label>

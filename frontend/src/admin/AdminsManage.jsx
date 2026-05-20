@@ -208,19 +208,27 @@ export default function AdminsManage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => startEdit(a)}
-                        className="px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
-                      >
-                        Tahrir
-                      </button>
-                      <button
-                        onClick={() => remove(a._id)}
-                        className="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors"
-                      >
-                        O'chirish
-                      </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {a.isSuperAdmin ? (
+                        <span className="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-semibold">
+                          Super Admin
+                        </span>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => startEdit(a)}
+                            className="px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
+                          >
+                            Tahrir
+                          </button>
+                          <button
+                            onClick={() => remove(a._id)}
+                            className="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors"
+                          >
+                            O'chirish
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">

@@ -2,20 +2,62 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import api from "../api/axios.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const blank = { name: "", username: "", password: "", phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
+const schoolSubjects = [
+  "Ona tili",
+  "Adabiyot",
+  "Matematika",
+  "Algebra",
+  "Geometriya",
+  "Fizika",
+  "Kimyo",
+  "Biologiya",
+  "Tarix",
+  "Geografiya",
+  "Ingliz tili",
+  "Rus tili",
+  "Informatika",
+  "Astronomiya",
+  "Iqtisodiyot asoslari",
+  "Huquq asoslari",
+];
 
 export default function TeachersAdmin() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const canCreate = user?.role === "admin" || !!user?.isSuperAdmin;
+  const canEdit = canCreate;
+  const canDelete = !!user?.isSuperAdmin;
   const [items, setItems] = useState([]);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(blank);
   const [previewCert, setPreviewCert] = useState(null);
+  const [subjectOpen, setSubjectOpen] = useState(false);
   const photoInput = useRef();
   const certInput = useRef();
+  const subjectRef = useRef();
 
   const load = async () => { try { setItems((await api.get("/teachers")).data); } catch {} };
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (subjectRef.current && !subjectRef.current.contains(e.target)) {
+        setSubjectOpen(false);
+      }
+    };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setSubjectOpen(false);
+    };
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -35,12 +77,26 @@ export default function TeachersAdmin() {
 
   const remove = async (id) => {
     if (!confirm("O'chirilsinmi?")) return;
-    try { await api.delete(`/teachers/${id}`); load(); } catch {}
+    try { await api.delete(`/teachers/${id}`); load(); } catch (err) {
+      toast.error(err.response?.data?.error || "Xato");
+    }
+  };
+
+  const clearAll = async () => {
+    if (!confirm("Hamma ustozlar o'chirilsinmi? Bu amal qaytarib bo'lmaydi.")) return;
+    try {
+      await api.delete("/teachers/clear");
+      toast.success("Barcha ustozlar o'chirildi");
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Xato");
+    }
   };
 
   const startEdit = (tc) => {
     setEditing(tc._id);
     setForm({ ...tc, phone: "", password: tc.passwordPlain || "" });
+    setSubjectOpen(false);
   };
 
   const handleFile = (key) => (e) => {
@@ -55,7 +111,16 @@ export default function TeachersAdmin() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl md:text-3xl font-bold">{t("admin.teachers")}</h1>
-        <button onClick={() => { setEditing("new"); setForm(blank); }} className="btn-primary">+ Yangi</button>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {canDelete && (
+            <button onClick={clearAll} className="btn-secondary border border-rose-300 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-900/20">
+              Hammasini o'chirish
+            </button>
+          )}
+          {canCreate && (
+            <button onClick={() => { setEditing("new"); setForm(blank); }} className="btn-primary">+ Yangi</button>
+          )}
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -75,10 +140,16 @@ export default function TeachersAdmin() {
                 📜 Sertifikatni ko'rish
               </button>
             )}
-            <div className="flex gap-2 justify-center mt-2">
-              <button onClick={() => startEdit(tc)} className="btn-secondary text-sm">{t("common.edit")}</button>
-              <button onClick={() => remove(tc._id)} className="btn-secondary text-sm">🗑</button>
-            </div>
+            {(canEdit || canDelete) && (
+              <div className="flex gap-2 justify-center mt-2">
+                {canEdit && (
+                  <button onClick={() => startEdit(tc)} className="btn-secondary text-sm">{t("common.edit")}</button>
+                )}
+                {canDelete && (
+                  <button onClick={() => remove(tc._id)} className="btn-secondary text-sm">🗑</button>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -126,8 +197,7 @@ export default function TeachersAdmin() {
                     <span className="text-xs font-semibold tracking-[0.25em] text-emerald-600">O'QITUVCHI</span>
                   </div>
                   <input
-                    className="w-full text-2xl md:text-3xl font-bold bg-transparent outline-none border-b border-transparent focus:border-emerald-500 pb-1 placeholder:text-slate-400"
-                    placeholder="O'qituvchi ism-familiyasi"
+                    className="w-full text-2xl md:text-3xl font-bold bg-white dark:bg-slate-900 outline-none border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:border-emerald-500"
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -137,13 +207,42 @@ export default function TeachersAdmin() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm text-slate-600 dark:text-slate-400 block mb-1.5">Fan yo'nalishi</label>
-                    <input
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
-                      placeholder="Fanni tanlang"
-                      required
-                      value={form.subject}
-                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    />
+                    <div ref={subjectRef} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setSubjectOpen((v) => !v)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 text-left flex items-center justify-between gap-3"
+                      >
+                        <span className={form.subject ? "text-slate-900 dark:text-white" : "text-slate-400"}>
+                          {form.subject || "Fanni tanlang"}
+                        </span>
+                        <span className={`text-slate-400 transition-transform ${subjectOpen ? "rotate-180" : ""}`}>
+                          ▾
+                        </span>
+                      </button>
+
+                      {subjectOpen && (
+                        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
+                          <div className="max-h-72 overflow-y-auto p-2">
+                            {schoolSubjects.map((subject) => (
+                              <button
+                                key={subject}
+                                type="button"
+                                onClick={() => {
+                                  setForm({ ...form, subject });
+                                  setSubjectOpen(false);
+                                }}
+                                className={`w-full text-left px-4 py-3 rounded-xl transition mb-1 last:mb-0 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${
+                                  form.subject === subject ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 font-semibold" : "text-slate-700 dark:text-slate-200"
+                                }`}
+                              >
+                                {subject}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="text-sm text-slate-600 dark:text-slate-400 block mb-1.5">Telefon raqam</label>
@@ -153,7 +252,6 @@ export default function TeachersAdmin() {
                       </span>
                       <input
                         className="w-full pl-24 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
-                        placeholder="Telefon raqam"
                         inputMode="numeric"
                         maxLength={9}
                         value={form.phone}
@@ -168,7 +266,6 @@ export default function TeachersAdmin() {
                     <label className="text-xs font-semibold tracking-[0.25em] text-indigo-600 block mb-1.5">LOGIN (Ism Familiya)</label>
                     <input
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500"
-                      placeholder="Akmal Yusupov"
                       value={form.username || ""}
                       onChange={(e) => setForm({ ...form, username: e.target.value })}
                     />
@@ -181,7 +278,6 @@ export default function TeachersAdmin() {
                     <input
                       type="text"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500"
-                      placeholder="parol"
                       value={form.password || ""}
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
                     />
@@ -193,7 +289,6 @@ export default function TeachersAdmin() {
                   <textarea
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 resize-none"
-                    placeholder="O'qituvchi haqida qisqacha ma'lumot shu yerga yoziladi."
                     value={form.bio}
                     onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   />

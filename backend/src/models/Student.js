@@ -10,6 +10,9 @@ const studentSchema = new mongoose.Schema(
     passwordPlain: { type: String, default: "" },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
+    group: { type: String, default: "", trim: true },
+    lessonStartTime: { type: String, default: "", trim: true },
+    lessonEndTime: { type: String, default: "", trim: true },
     paymentStatus: {
       type: String,
       enum: ["paid", "unpaid", "expired"],

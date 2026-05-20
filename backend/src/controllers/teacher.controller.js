@@ -1,10 +1,18 @@
 import Teacher from "../models/Teacher.js";
+import Group from "../models/Group.js";
+import Student from "../models/Student.js";
 import { hashPassword } from "../utils/hashPassword.js";
+
+const normalizeText = (value = "") => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
 export const listTeachers = async (req, res) => {
   try {
     const isAdmin = req.user?.role === "admin";
-    const filter = isAdmin ? {} : { isActive: true };
+    const subject = normalizeText(req.query?.subject);
+    const filter = { isActive: true, isDeleted: false };
+    if (subject) {
+      filter.subject = { $regex: subject.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
+    }
     const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
     const teachers = await Teacher.find(filter).select(projection).sort({ createdAt: -1 });
     res.json(teachers);
@@ -16,7 +24,7 @@ export const listTeachers = async (req, res) => {
 export const getTeacher = async (req, res) => {
   try {
     const isAdmin = req.user?.role === "admin";
-    const filter = isAdmin ? { _id: req.params.id } : { _id: req.params.id, isActive: true };
+    const filter = isAdmin ? { _id: req.params.id, isActive: true, isDeleted: false } : { _id: req.params.id, isActive: true, isDeleted: false };
     const projection = isAdmin ? "-passwordHash" : "-passwordHash -passwordPlain";
     const teacher = await Teacher.findOne(filter).select(projection);
     if (!teacher) return res.status(404).json({ error: "Ustoz topilmadi" });
@@ -64,9 +72,26 @@ export const updateTeacher = async (req, res) => {
 
 export const deleteTeacher = async (req, res) => {
   try {
-    const teacher = await Teacher.findByIdAndDelete(req.params.id);
+    const teacher = await Teacher.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true, isActive: false },
+      { new: true }
+    ).select("-passwordHash");
     if (!teacher) return res.status(404).json({ error: "Ustoz topilmadi" });
-    res.json({ message: "Ustoz o'chirildi" });
+    res.json({ message: "Ustoz yashirildi" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const clearTeachers = async (_req, res) => {
+  try {
+    await Promise.all([
+      Teacher.deleteMany({}),
+      Group.deleteMany({}),
+      Student.updateMany({}, { $unset: { teacher: "" }, $set: { group: "", lessonStartTime: "", lessonEndTime: "" } })
+    ]);
+    res.json({ message: "Barcha ustozlar o'chirildi" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -21,6 +21,7 @@ import StudentLogin from "./student/StudentLogin.jsx";
 import StudentDashboard from "./student/StudentDashboard.jsx";
 import TeacherLogin from "./teacher/TeacherLogin.jsx";
 import TeacherDashboard from "./teacher/TeacherDashboard.jsx";
+import TeacherLayout from "./teacher/TeacherLayout.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -56,7 +57,9 @@ export default function App() {
 
       <Route path="/teacher/login" element={<TeacherLogin />} />
       <Route element={<ProtectedRoute role="teacher" />}>
-        <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+        <Route element={<TeacherLayout />}>
+          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

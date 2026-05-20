@@ -12,16 +12,10 @@ const ICONS = {
   "Geografiya":          { emoji: "🌍", gradient: "linear-gradient(135deg, #ccfbf1, #2dd4bf)" },
   "Ingliz tili":         { emoji: "🇬🇧", gradient: "linear-gradient(135deg, #dbeafe, #60a5fa)" },
   "Rus tili":            { emoji: "🇷🇺", gradient: "linear-gradient(135deg, #fee2e2, #fca5a5)" },
-  "Arab tili":           { emoji: "📜", gradient: "linear-gradient(135deg, #fef3c7, #fbbf24)" },
   "Informatika":         { emoji: "💻", gradient: "linear-gradient(135deg, #e0e7ff, #818cf8)" },
   "Astronomiya":         { emoji: "🔭", gradient: "linear-gradient(135deg, #ede9fe, #a78bfa)" },
   "Iqtisodiyot asoslari":{ emoji: "💰", gradient: "linear-gradient(135deg, #fef9c3, #facc15)" },
   "Huquq asoslari":      { emoji: "⚖️", gradient: "linear-gradient(135deg, #f1f5f9, #94a3b8)" },
-  "Chizmachilik":        { emoji: "✏️", gradient: "linear-gradient(135deg, #ffedd5, #fdba74)" },
-  "Tasviriy san'at":     { emoji: "🎨", gradient: "linear-gradient(135deg, #fce7f3, #f472b6)" },
-  "Musiqa":              { emoji: "🎵", gradient: "linear-gradient(135deg, #f3e8ff, #c084fc)" },
-  "Jismoniy tarbiya":    { emoji: "⚽", gradient: "linear-gradient(135deg, #d1fae5, #34d399)" },
-  "Texnologiya":         { emoji: "🔧", gradient: "linear-gradient(135deg, #fee2e2, #f87171)" }
 };
 
 const DEFAULT = { emoji: "📚", gradient: "linear-gradient(135deg, #e0f2fe, #7dd3fc)" };

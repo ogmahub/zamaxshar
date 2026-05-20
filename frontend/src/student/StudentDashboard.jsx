@@ -51,6 +51,22 @@ export default function StudentDashboard() {
               <div className="text-sm text-slate-500 mb-1">Talaba</div>
               <div className="text-xl font-bold mb-1">{data.firstName} {data.lastName}</div>
               <div className="text-sm text-slate-500">{data.phone}</div>
+              {(data.group || data.lessonStartTime || data.lessonEndTime) && (
+                <div className="mt-4 grid sm:grid-cols-3 gap-3 text-sm">
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                    <div className="text-xs text-slate-500 mb-1">Guruh</div>
+                    <div className="font-semibold">{data.group || "—"}</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                    <div className="text-xs text-slate-500 mb-1">Boshlanish</div>
+                    <div className="font-semibold">{data.lessonStartTime || "—"}</div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                    <div className="text-xs text-slate-500 mb-1">Tugash</div>
+                    <div className="font-semibold">{data.lessonEndTime || "—"}</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="card p-6">

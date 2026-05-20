@@ -11,7 +11,8 @@ const teacherSchema = new mongoose.Schema(
     bio: { type: String, default: "" },
     photo: { type: String, default: "" },
     certificate: { type: String, default: "" },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    isDeleted: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

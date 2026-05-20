@@ -1,11 +1,21 @@
 import Course from "../models/Course.js";
 
+const hiddenCourseTitles = new Set([
+  "arab tili",
+  "chizmachilik",
+  "tasviriy san'at",
+  "musiqa",
+  "jismoniy tarbiya",
+  "texnologiya"
+]);
+
+const normalizeText = (value = "") => String(value || "").trim().toLowerCase();
+
 export const listCourses = async (req, res) => {
   try {
-    const isAdmin = req.user?.role === "admin";
-    const filter = isAdmin ? {} : { isActive: true };
+    const filter = { isActive: true };
     const courses = await Course.find(filter).sort({ createdAt: -1 });
-    res.json(courses);
+    res.json(courses.filter((course) => !hiddenCourseTitles.has(normalizeText(course.titleUz))));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -13,10 +23,11 @@ export const listCourses = async (req, res) => {
 
 export const getCourse = async (req, res) => {
   try {
-    const isAdmin = req.user?.role === "admin";
-    const filter = isAdmin ? { _id: req.params.id } : { _id: req.params.id, isActive: true };
-    const course = await Course.findOne(filter);
+    const course = await Course.findOne({ _id: req.params.id, isActive: true });
     if (!course) return res.status(404).json({ error: "Kurs topilmadi" });
+    if (hiddenCourseTitles.has(normalizeText(course.titleUz))) {
+      return res.status(404).json({ error: "Kurs topilmadi" });
+    }
     res.json(course);
   } catch (error) {
     res.status(500).json({ error: error.message });

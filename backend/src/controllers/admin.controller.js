@@ -13,7 +13,7 @@ const sanitize = (a) => ({
 
 export const listAdmins = async (req, res) => {
   try {
-    const items = await Admin.find({ isSuperAdmin: false }).select("-passwordHash").sort({ createdAt: -1 });
+    const items = await Admin.find({}).select("-passwordHash").sort({ createdAt: -1 });
     res.json(items.map(sanitize));
   } catch (e) {
     res.status(500).json({ error: e.message });

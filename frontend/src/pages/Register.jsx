@@ -8,6 +8,14 @@ import api from "../api/axios.js";
 export default function Register() {
   const { t } = useTranslation();
   const location = useLocation();
+  const hiddenCourses = new Set([
+    "arab tili",
+    "chizmachilik",
+    "tasviriy san'at",
+    "musiqa",
+    "jismoniy tarbiya",
+    "texnologiya"
+  ]);
   const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({
     firstName: "", lastName: "", phone: "",
@@ -17,7 +25,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get("/courses").then((r) => setCourses(r.data)).catch(() => {});
+    api.get("/courses")
+      .then((r) => setCourses((r.data || []).filter((course) => !hiddenCourses.has(String(course.titleUz || "").trim().toLowerCase()))))
+      .catch(() => {});
   }, []);
 
   const submit = async (e) => {

@@ -5,12 +5,12 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
 import { connectDB } from "./config/db.js";
-import { autoSeedIfEmpty } from "./utils/autoSeed.js";
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
+import groupRoutes from "./routes/group.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -21,7 +21,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 await connectDB();
-await autoSeedIfEmpty();
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -32,10 +31,28 @@ const allowedOrigins = [
 ];
 if (process.env.CLIENT_URL) allowedOrigins.push(process.env.CLIENT_URL);
 
+const isAllowedOrigin = (origin = "") => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  let parsed;
+  try {
+    parsed = new URL(origin);
+  } catch {
+    return false;
+  }
+
+  const host = parsed.hostname;
+  const isLocalPreview = /^localhost$|^127\.0\.0\.1$/.test(host);
+  const isNetlifyPreview = host.endsWith(".netlify.app") || host === "netlify.app";
+  const isVercelPreview = host.endsWith(".vercel.app") || host === "vercel.app";
+
+  return isLocalPreview || isNetlifyPreview || isVercelPreview;
+};
+
 app.use(cors({
   origin: (origin, cb) => {
-    const isLocalPreview = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin || "");
-    if (!origin || allowedOrigins.includes(origin) || isLocalPreview) return cb(null, true);
+    if (isAllowedOrigin(origin)) return cb(null, true);
     cb(new Error(`CORS: ${origin} ruxsatsiz`));
   },
   credentials: true
@@ -52,6 +69,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/teachers", teacherRoutes);
+app.use("/api/groups", groupRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/admins", adminRoutes);

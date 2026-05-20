@@ -18,10 +18,88 @@ const CARD_LAYOUT = {
 };
 
 const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com/zamaxshar_tm", icon: "📸", bg: "linear-gradient(135deg, #feda75 0%, #d62976 50%, #4f5bd5 100%)", hint: "Daily postlar" },
-  { label: "Telegram", href: "https://t.me/Zamaxshar_TM", icon: "✈️", bg: "linear-gradient(135deg, #37bbfe, #007dbb)", hint: "Yangiliklar" },
-  { label: "YouTube", href: "https://youtube.com/@zamaxshar", icon: "▶️", bg: "linear-gradient(135deg, #ff4444, #cc0000)", hint: "Video darslar" },
+  {
+    label: "Instagram",
+    href: "https://instagram.com/zamaxshar_tm",
+    icon: "instagram",
+    topBg: "linear-gradient(135deg, #ffcf71 0%, #ff5da2 45%, #7c4dff 100%)",
+    cardBg: "linear-gradient(135deg, #f7c55f 0%, #f65bb6 48%, #7c5cff 100%)",
+    hint: "Daily postlar",
+  },
+  {
+    label: "Telegram",
+    href: "https://t.me/Zamaxshar_TM",
+    icon: "telegram",
+    topBg: "linear-gradient(135deg, #4cc6ff 0%, #1796df 100%)",
+    cardBg: "linear-gradient(135deg, #3fb9ff 0%, #128fd5 100%)",
+    hint: "Yangiliklar",
+  },
+  {
+    label: "YouTube",
+    href: "https://youtube.com/@zamaxshar",
+    icon: "youtube",
+    topBg: "linear-gradient(135deg, #ff4f4f 0%, #e60000 100%)",
+    cardBg: "linear-gradient(135deg, #ff4141 0%, #d90000 100%)",
+    hint: "Video darslar",
+  },
 ];
+
+function SocialGlyph({ type }) {
+  const common = "h-7 w-7 sm:h-8 sm:w-8 text-white";
+
+  if (type === "instagram") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className={common} aria-hidden="true">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (type === "telegram") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className={common} aria-hidden="true">
+        <path
+          d="M21.5 4.7 18.6 19.8c-.2 1.1-1 1.4-2 .9l-5.5-4.1-2.7 2.6c-.3.3-.6.6-1.2.6l.4-5.7 10.4-9.4c.5-.4-.1-.7-.7-.3L6.1 13.3 1.6 11.9c-1-.3-1-1 .2-1.5L20 4.2c.9-.3 1.6.2 1.5 1z"
+          fill="currentColor"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={common} aria-hidden="true">
+      <path
+        d="M9.5 8.2v7.6l6.5-3.8-6.5-3.8z"
+        fill="currentColor"
+      />
+      <path
+        d="M21 12c0-1.3-.1-2.6-.3-3.7-.2-1.1-1-2-2.1-2.2C16.8 5.7 12 5.7 12 5.7s-4.8 0-6.6.4c-1.1.2-1.9 1.1-2.1 2.2C3.1 9.4 3 10.7 3 12s.1 2.6.3 3.7c.2 1.1 1 2 2.1 2.2 1.8.4 6.6.4 6.6.4s4.8 0 6.6-.4c1.1-.2 1.9-1.1 2.1-2.2.2-1.1.3-2.4.3-3.7z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SocialTopIcon({ item }) {
+  return (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={item.label}
+      className="group grid place-items-center h-16 w-16 sm:h-18 sm:w-18 rounded-full p-1 shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-1 hover:scale-105"
+      style={{ background: item.topBg }}
+    >
+      <div className="grid place-items-center h-full w-full rounded-full bg-white/10 backdrop-blur-sm ring-1 ring-white/15">
+        <SocialGlyph type={item.icon} />
+      </div>
+    </a>
+  );
+}
 
 function ContactCard({ item, i }) {
   const accentKey = item.key;
@@ -160,10 +238,11 @@ export default function Contact() {
           variants={fadeUp}
           className="text-center"
         >
-          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6">
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.34em] mb-6">
             Ijtimoiy tarmoqlar
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {socialLinks.map((s) => (
               <a
                 key={s.label}
@@ -171,15 +250,20 @@ export default function Contact() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={s.label}
-                style={{ background: s.bg }}
-                className="group flex items-center gap-4 rounded-[26px] p-4 text-left shadow-[0_12px_30px_rgba(15,23,42,0.14)] hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(15,23,42,0.2)] transition-all duration-300"
+                style={{ background: s.cardBg }}
+                className="group relative flex items-center gap-4 rounded-[30px] p-5 sm:p-6 text-left shadow-[0_16px_40px_rgba(15,23,42,0.16)] hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.22)] transition-all duration-300 overflow-hidden"
               >
-                <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm grid place-items-center text-2xl shadow-inner shrink-0">
-                  {s.icon}
+                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-3xl bg-white/14 backdrop-blur-md grid place-items-center shadow-inner ring-1 ring-white/10 shrink-0">
+                  <SocialGlyph type={s.icon} />
                 </div>
-                <div className="min-w-0 flex-1 text-white">
-                  <p className="text-xs font-bold uppercase tracking-[0.25em] opacity-80 mb-1">{s.label}</p>
-                  <p className="font-extrabold text-lg leading-tight">{s.hint}</p>
+                <div className="relative min-w-0 flex-1 text-white">
+                  <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.3em] opacity-80 mb-1 sm:mb-2">
+                    {s.label}
+                  </p>
+                  <p className="font-black text-xl sm:text-2xl leading-tight">
+                    {s.hint}
+                  </p>
                 </div>
               </a>
             ))}

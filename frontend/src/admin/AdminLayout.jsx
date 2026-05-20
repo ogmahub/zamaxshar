@@ -59,7 +59,6 @@ export default function AdminLayout() {
           ))}
         </nav>
         <div className="p-3 border-t border-slate-200 dark:border-slate-800">
-          <div className="px-3 py-2 text-xs text-slate-500">{user?.username}</div>
           <button onClick={handleLogout} className="w-full btn-secondary text-sm">{t("auth.logout")}</button>
         </div>
       </aside>

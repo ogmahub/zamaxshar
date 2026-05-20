@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import { connectDB } from "../config/db.js";
 import Admin from "../models/Admin.js";
 import Course from "../models/Course.js";
-import Teacher from "../models/Teacher.js";
-import Student from "../models/Student.js";
 import { hashPassword } from "./hashPassword.js";
 
 dotenv.config();
@@ -16,8 +14,6 @@ const run = async () => {
   await Promise.all([
     Admin.deleteMany(),
     Course.deleteMany(),
-    Teacher.deleteMany(),
-    Student.deleteMany()
   ]);
 
   console.log("Admin yaratilmoqda...");
@@ -69,44 +65,8 @@ const run = async () => {
     }
   ]);
 
-  console.log("Ustozlar yaratilmoqda...");
-  const teachers = await Teacher.insertMany([
-    {
-      name: "Saodat Xolmatova",
-      phone: "+998901234567",
-      subject: "Ona tili va adabiyot",
-      bio: "12 yillik tajribaga ega ona tili va adabiyot fani o'qituvchisi."
-    },
-    {
-      name: "Bobur Karimov",
-      phone: "+998901234568",
-      subject: "Matematika",
-      bio: "Matematika fani o'qituvchisi, DTM mutaxassisi."
-    },
-    {
-      name: "Madina Yusupova",
-      phone: "+998901234569",
-      subject: "Ingliz tili",
-      bio: "IELTS 8.5, 8 yillik tajribaga ega ingliz tili o'qituvchisi."
-    }
-  ]);
-
-  console.log("Demo student yaratilmoqda...");
-  await Student.create({
-    firstName: "Ali",
-    lastName: "Valiyev",
-    phone: "+998901111111",
-    passwordHash: await hashPassword("12345"),
-    course: courses[0]._id,
-    teacher: teachers[0]._id,
-    paymentStatus: "paid",
-    validFrom: new Date(),
-    validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
-  });
-
   console.log("Seed tugadi.");
   console.log("Admin login: admin / admin123");
-  console.log("Student login: +998901111111 / 12345");
 
   await mongoose.disconnect();
   process.exit(0);
