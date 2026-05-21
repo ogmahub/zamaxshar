@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const PAYMENT_COLORS = {
   paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
@@ -32,6 +33,7 @@ const blank = makeBlank();
 
 export default function StudentsAdmin() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -40,6 +42,7 @@ export default function StudentsAdmin() {
   const [form, setForm] = useState(blank);
   const paymentFilter = searchParams.get("payment");
   const filteredItems = paymentFilter ? items.filter((student) => student.paymentStatus === paymentFilter) : items;
+  const canSeePasswords = user?.role === "admin" || !!user?.isSuperAdmin;
 
   const load = async () => {
     try { setItems((await api.get("/students")).data); } catch {}
@@ -69,6 +72,16 @@ export default function StudentsAdmin() {
   const remove = async (id) => {
     if (!confirm("O'chirilsinmi?")) return;
     try { await api.delete(`/students/${id}`); load(); } catch {}
+  };
+
+  const copyPassword = async (password = "") => {
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      toast.success("Parol nusxalandi");
+    } catch {
+      toast.error("Parolni nusxalab bo'lmadi");
+    }
   };
 
   const startEdit = (s) => {
@@ -110,6 +123,7 @@ export default function StudentsAdmin() {
                 <th className="px-4 py-3 text-left">Ustoz</th>
                 <th className="px-4 py-3 text-left">Guruh</th>
                 <th className="px-4 py-3 text-left">Vaqt</th>
+                {canSeePasswords && <th className="px-4 py-3 text-left">Parol</th>}
                 <th className="px-4 py-3 text-left">To'lov</th>
                 <th className="px-4 py-3 text-right">{t("common.actions")}</th>
               </tr>
@@ -123,18 +137,36 @@ export default function StudentsAdmin() {
                   <td className="px-4 py-3">{s.teacher?.name || "—"}</td>
                   <td className="px-4 py-3">{s.group || "—"}</td>
                   <td className="px-4 py-3">{s.lessonStartTime && s.lessonEndTime ? `${s.lessonStartTime} - ${s.lessonEndTime}` : "—"}</td>
+                  {canSeePasswords && (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs text-slate-700 dark:text-slate-300">
+                          {s.passwordPlain || "—"}
+                        </span>
+                        {s.passwordPlain && (
+                          <button
+                            type="button"
+                            onClick={() => copyPassword(s.passwordPlain)}
+                            className="text-xs text-brand-600 hover:underline"
+                          >
+                            Nusxa
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${PAYMENT_COLORS[s.paymentStatus]}`}>
                       {PAYMENT_LABELS[s.paymentStatus] || s.paymentStatus}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
-                    <button onClick={() => startEdit(s)} className="text-brand-600 hover:underline">{t("common.edit")}</button>
+                    <button onClick={() => startEdit(s)} className="text-brand-600 hover:underline">Tahrirlash</button>
                     <button onClick={() => remove(s._id)} className="text-slate-500 hover:text-rose-600">🗑</button>
                   </td>
                 </tr>
               ))}
-              {filteredItems.length === 0 && <tr><td colSpan="8" className="px-4 py-10 text-center text-slate-500">{t("common.noData")}</td></tr>}
+              {filteredItems.length === 0 && <tr><td colSpan={canSeePasswords ? "9" : "8"} className="px-4 py-10 text-center text-slate-500">{t("common.noData")}</td></tr>}
             </tbody>
           </table>
         </div>
