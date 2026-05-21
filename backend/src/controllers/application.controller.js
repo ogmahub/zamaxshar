@@ -98,28 +98,44 @@ export const convertToStudent = async (req, res) => {
       }
     }
 
-    const existing = await Student.findOne({ phone: app.phone });
-    if (existing) return res.status(400).json({ error: "Bu telefon bilan student mavjud" });
-
     const finalPassword = password || app.passwordPlain || "12345";
     const passwordHash = await hashPassword(finalPassword);
     const username = app.username || await makeUsername(app.firstName, app.lastName, app.phone);
 
-    const student = await Student.create({
-      firstName: app.firstName,
-      lastName: app.lastName,
-      username,
-      phone: app.phone,
-      passwordHash,
-      passwordPlain: finalPassword,
-      course: app.course,
-      teacher: selectedTeacher._id,
-      group,
-      lessonStartTime,
-      lessonEndTime,
-      validFrom,
-      validUntil
-    });
+    const existing = await Student.findOne({ phone: app.phone });
+    let student;
+
+    if (existing) {
+      existing.firstName = app.firstName;
+      existing.lastName = app.lastName;
+      existing.username = username;
+      existing.passwordHash = passwordHash;
+      existing.passwordPlain = finalPassword;
+      existing.course = app.course;
+      existing.teacher = selectedTeacher._id;
+      existing.group = group;
+      existing.lessonStartTime = lessonStartTime;
+      existing.lessonEndTime = lessonEndTime;
+      existing.validFrom = validFrom;
+      existing.validUntil = validUntil;
+      student = await existing.save();
+    } else {
+      student = await Student.create({
+        firstName: app.firstName,
+        lastName: app.lastName,
+        username,
+        phone: app.phone,
+        passwordHash,
+        passwordPlain: finalPassword,
+        course: app.course,
+        teacher: selectedTeacher._id,
+        group,
+        lessonStartTime,
+        lessonEndTime,
+        validFrom,
+        validUntil
+      });
+    }
 
     app.status = "converted_to_student";
     await app.save();
