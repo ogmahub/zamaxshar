@@ -7,6 +7,15 @@ export const connectDB = async () => {
     try {
       await mongoose.connect(uri);
       console.log("MongoDB connected (Atlas)");
+      
+      // Eski unikal indeksni to'liq o'chirib tashlash (agar mavjud bo'lsa)
+      try {
+        await mongoose.connection.db.collection("groups").dropIndex("teacher_1_name_1");
+        console.log("Eski unikal indeks (teacher_1_name_1) muvaffaqiyatli o'chirildi.");
+      } catch (indexError) {
+        // Agar indeks allaqachon o'chirilgan bo'lsa yoki yo'q bo'lsa, xatolikni o'tkazib yuboramiz
+      }
+      
       return;
     } catch (error) {
       if (process.env.NODE_ENV === "production") {

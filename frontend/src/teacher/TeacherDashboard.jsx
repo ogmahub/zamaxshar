@@ -73,7 +73,7 @@ export default function TeacherDashboard() {
         groupsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     } catch (err) {
-      alert(err.response?.data?.error || "Xato");
+      alert(err.response?.data?.error || err.message || "Xato yuz berdi. Internet aloqasi yoki serverni tekshiring");
     }
   };
 
