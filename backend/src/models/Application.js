@@ -9,6 +9,8 @@ const applicationSchema = new mongoose.Schema(
     studyMode: { type: String, enum: ["online", "offline"], default: "offline" },
     startDate: { type: Date },
     validUntil: { type: Date },
+    username: { type: String, trim: true, lowercase: true },
+    passwordPlain: { type: String, default: "" },
     message: { type: String, default: "" },
     status: {
       type: String,

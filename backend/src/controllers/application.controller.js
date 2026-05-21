@@ -101,8 +101,9 @@ export const convertToStudent = async (req, res) => {
     const existing = await Student.findOne({ phone: app.phone });
     if (existing) return res.status(400).json({ error: "Bu telefon bilan student mavjud" });
 
-    const passwordHash = await hashPassword(password || "12345");
-    const username = await makeUsername(app.firstName, app.lastName, app.phone);
+    const finalPassword = password || app.passwordPlain || "12345";
+    const passwordHash = await hashPassword(finalPassword);
+    const username = app.username || await makeUsername(app.firstName, app.lastName, app.phone);
 
     const student = await Student.create({
       firstName: app.firstName,
@@ -110,6 +111,7 @@ export const convertToStudent = async (req, res) => {
       username,
       phone: app.phone,
       passwordHash,
+      passwordPlain: finalPassword,
       course: app.course,
       teacher: selectedTeacher._id,
       group,

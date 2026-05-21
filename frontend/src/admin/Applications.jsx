@@ -43,6 +43,8 @@ export default function Applications() {
     studyMode: "offline",
     startDate: "",
     validUntil: "",
+    username: "",
+    passwordPlain: "",
     message: "",
   });
 
@@ -87,6 +89,8 @@ export default function Applications() {
       studyMode: app.studyMode || "offline",
       startDate: start,
       validUntil: end,
+      username: app.username || "",
+      passwordPlain: app.passwordPlain || "",
       message: app.message || "",
     });
   };
@@ -264,6 +268,25 @@ export default function Applications() {
                   className="input"
                   value={editForm.validUntil}
                   onChange={(e) => setEditForm({ ...editForm, validUntil: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="label block mb-1">Login (Username)</label>
+                <input
+                  className="input"
+                  placeholder="student_login"
+                  value={editForm.username}
+                  onChange={(e) => setEditForm({ ...editForm, username: e.target.value.toLowerCase().replace(/\s/g, "") })}
+                />
+              </div>
+              <div>
+                <label className="label block mb-1">Parol</label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="12345"
+                  value={editForm.passwordPlain}
+                  onChange={(e) => setEditForm({ ...editForm, passwordPlain: e.target.value })}
                 />
               </div>
             </div>
