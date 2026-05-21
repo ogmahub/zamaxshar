@@ -113,7 +113,7 @@ export default function Applications() {
     setSelectedCourseTitle(courseTitle);
     setConvertId(app._id);
     setConvertForm({
-      password: "12345",
+      password: app.passwordPlain || "12345",
       teacher: "",
       group: "",
       lessonStartTime: "",
