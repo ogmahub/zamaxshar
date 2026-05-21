@@ -274,7 +274,6 @@ export default function Applications() {
                 <label className="label block mb-1">Login (Username)</label>
                 <input
                   className="input"
-                  placeholder="student_login"
                   value={editForm.username}
                   onChange={(e) => setEditForm({ ...editForm, username: e.target.value.toLowerCase().replace(/\s/g, "") })}
                 />
@@ -284,7 +283,6 @@ export default function Applications() {
                 <input
                   type="text"
                   className="input"
-                  placeholder="12345"
                   value={editForm.passwordPlain}
                   onChange={(e) => setEditForm({ ...editForm, passwordPlain: e.target.value })}
                 />
