@@ -15,8 +15,6 @@ export const autoSeedIfEmpty = async () => {
     console.log(`Super Admin yaratildi: ${process.env.ADMIN_USERNAME || "ZAMAXSHAR12"}`);
   }
 
-  if (process.env.ENABLE_AUTO_SEED !== "true") return;
-
   const courseCount = await Course.countDocuments();
   if (courseCount > 0) return;
 
