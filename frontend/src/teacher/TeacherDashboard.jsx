@@ -224,7 +224,7 @@ export default function TeacherDashboard() {
             </form>
           </div>
 
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-4">
             {groups.length === 0 ? (
               <div className="text-center py-8 text-slate-500 sm:col-span-2 xl:col-span-3">Hozircha guruh yo'q.</div>
             ) : groups.map((group) => {
