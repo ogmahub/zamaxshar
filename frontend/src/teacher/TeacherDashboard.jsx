@@ -249,12 +249,15 @@ export default function TeacherDashboard() {
                   
                   {groupStudents.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 space-y-1">
-                      <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'quvchilar ro'yxati:</div>
-                      <div className="max-h-32 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
-                        {groupStudents.map((st) => (
-                          <div key={st._id} className="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 py-0.5 border-b border-dashed border-slate-100 dark:border-slate-800 last:border-0">
-                            <span className="font-medium truncate">{st.firstName} {st.lastName}</span>
-                            <span className="text-[10px] text-slate-400 flex-shrink-0 ml-2">{st.phone || ""}</span>
+                      <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'quvchilar ro'yxati:</div>
+                      <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                        {groupStudents.map((st, idx) => (
+                          <div key={st._id} className="flex items-center justify-between text-sm md:text-base text-slate-800 dark:text-slate-200 py-1 border-b border-dashed border-slate-100 dark:border-slate-800 last:border-0">
+                            <span className="font-semibold truncate">
+                              <span className="text-indigo-600 dark:text-indigo-400 font-bold mr-2">{idx + 1}.</span>
+                              {st.firstName} {st.lastName}
+                            </span>
+                            <span className="text-xs md:text-sm text-slate-500 dark:text-slate-400 font-medium flex-shrink-0 ml-2">{st.phone || ""}</span>
                           </div>
                         ))}
                       </div>
