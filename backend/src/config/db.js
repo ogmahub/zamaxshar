@@ -9,9 +9,19 @@ export const connectDB = async () => {
       console.log("MongoDB connected (Atlas)");
       return;
     } catch (error) {
-      console.warn("MongoDB Atlas connection failed, using in-memory MongoDB");
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          `MongoDB Atlas connection failed: ${error.message}. Productionda MONGO_URI to'g'ri bo'lishi kerak.`
+        );
+      }
+
+      console.warn("MongoDB Atlas connection failed, using in-memory MongoDB for development");
       console.warn("For production, ensure MONGO_URI is correct and IP is whitelisted");
     }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("MONGO_URI topilmadi. Productionda doimiy MongoDB ulanishi kerak.");
   }
 
   // Fallback to in-memory for deployment
