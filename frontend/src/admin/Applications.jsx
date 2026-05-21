@@ -21,7 +21,9 @@ const addDaysISO = (dateStr, days) => {
 export default function Applications() {
   const { t } = useTranslation();
   const [apps, setApps] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [convertId, setConvertId] = useState(null);
+  const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([]);
   const [selectedCourseTitle, setSelectedCourseTitle] = useState("");
   const [convertForm, setConvertForm] = useState({
@@ -33,6 +35,16 @@ export default function Applications() {
     validFrom: todayISO(),
     validUntil: addDaysISO(todayISO(), 30)
   });
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    course: "",
+    studyMode: "offline",
+    startDate: "",
+    validUntil: "",
+    message: "",
+  });
 
   const load = async () => {
     try {
@@ -43,6 +55,7 @@ export default function Applications() {
 
   useEffect(() => {
     load();
+    api.get("/courses").then((r) => setCourses(r.data)).catch(() => {});
   }, []);
 
   const loadTeachersForCourse = async (courseTitle) => {
@@ -59,6 +72,34 @@ export default function Applications() {
         ...s,
         teacher: ""
       }));
+    }
+  };
+
+  const openEdit = (app) => {
+    setEditId(app._id);
+    const start = app.startDate ? String(app.startDate).slice(0, 10) : todayISO();
+    const end = app.validUntil ? String(app.validUntil).slice(0, 10) : addDaysISO(start, 30);
+    setEditForm({
+      firstName: app.firstName || "",
+      lastName: app.lastName || "",
+      phone: app.phone || "",
+      course: app.course?._id || "",
+      studyMode: app.studyMode || "offline",
+      startDate: start,
+      validUntil: end,
+      message: app.message || "",
+    });
+  };
+
+  const submitEdit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/applications/${editId}`, editForm);
+      toast.success("Ariza yangilandi");
+      setEditId(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Xato");
     }
   };
 
@@ -142,6 +183,7 @@ export default function Applications() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                    <button onClick={() => openEdit(a)} className="text-brand-600 hover:underline">Tahrirlash</button>
                     {a.status === "new" && (
                       <>
                         <button onClick={() => updateStatus(a._id, "accepted")} className="text-emerald-600 hover:underline">Qabul</button>
@@ -167,6 +209,75 @@ export default function Applications() {
           </table>
         </div>
       </div>
+
+      {editId && (
+        <div className="fixed inset-0 bg-black/50 z-50 grid place-items-center p-4" onClick={() => setEditId(null)}>
+          <form onClick={(e) => e.stopPropagation()} onSubmit={submitEdit} className="card p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold">Tahrirlash</h3>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="label block mb-1">Ism</label>
+                <input className="input" value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} />
+              </div>
+              <div>
+                <label className="label block mb-1">Familiya</label>
+                <input className="input" value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} />
+              </div>
+              <div>
+                <label className="label block mb-1">Telefon</label>
+                <input className="input" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
+              </div>
+              <div>
+                <label className="label block mb-1">Kurs</label>
+                <select className="input" value={editForm.course} onChange={(e) => setEditForm({ ...editForm, course: e.target.value })}>
+                  <option value="">—</option>
+                  {courses.map((c) => <option key={c._id} value={c._id}>{c.titleUz}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="label block mb-1">Format</label>
+                <select className="input" value={editForm.studyMode} onChange={(e) => setEditForm({ ...editForm, studyMode: e.target.value })}>
+                  <option value="offline">offline</option>
+                  <option value="online">online</option>
+                </select>
+              </div>
+              <div>
+                <label className="label block mb-1">Boshlanish sanasi</label>
+                <input
+                  type="date"
+                  className="input"
+                  value={editForm.startDate}
+                  onChange={(e) => {
+                    const start = e.target.value;
+                    setEditForm((s) => ({
+                      ...s,
+                      startDate: start,
+                      validUntil: start ? addDaysISO(start, 30) : s.validUntil
+                    }));
+                  }}
+                />
+              </div>
+              <div>
+                <label className="label block mb-1">Tugash sanasi</label>
+                <input
+                  type="date"
+                  className="input"
+                  value={editForm.validUntil}
+                  onChange={(e) => setEditForm({ ...editForm, validUntil: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="label block mb-1">Izoh</label>
+              <textarea className="input resize-none" rows={4} value={editForm.message} onChange={(e) => setEditForm({ ...editForm, message: e.target.value })} />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button type="button" onClick={() => setEditId(null)} className="btn-secondary">Bekor</button>
+              <button type="submit" className="btn-primary">Saqlash</button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {convertId && (
         <div className="fixed inset-0 bg-black/50 z-50 grid place-items-center p-4" onClick={() => setConvertId(null)}>
@@ -206,8 +317,10 @@ export default function Applications() {
               <div>
                 <label className="label block mb-1">Boshlanish vaqti</label>
                 <input
-                  type="time"
-                  className="input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={5}
+                  className="input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 caret-brand-500"
                   value={convertForm.lessonStartTime}
                   onChange={(e) => setConvertForm({ ...convertForm, lessonStartTime: e.target.value })}
                 />
@@ -215,8 +328,10 @@ export default function Applications() {
               <div>
                 <label className="label block mb-1">Tugash vaqti</label>
                 <input
-                  type="time"
-                  className="input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={5}
+                  className="input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 caret-brand-500"
                   value={convertForm.lessonEndTime}
                   onChange={(e) => setConvertForm({ ...convertForm, lessonEndTime: e.target.value })}
                 />

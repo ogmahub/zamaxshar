@@ -8,6 +8,7 @@ const applicationSchema = new mongoose.Schema(
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
     studyMode: { type: String, enum: ["online", "offline"], default: "offline" },
     startDate: { type: Date },
+    validUntil: { type: Date },
     message: { type: String, default: "" },
     status: {
       type: String,
