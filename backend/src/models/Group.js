@@ -10,6 +10,4 @@ const groupSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-groupSchema.index({ teacher: 1, name: 1 }, { unique: true });
-
 export default mongoose.model("Group", groupSchema);

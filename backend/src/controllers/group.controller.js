@@ -42,9 +42,6 @@ export const createGroup = async (req, res) => {
     const group = await Group.create(payload);
     res.status(201).json(group);
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ error: "Bu nomdagi guruh allaqachon mavjud" });
-    }
     res.status(400).json({ error: error.message });
   }
 };
@@ -69,9 +66,6 @@ export const updateGroup = async (req, res) => {
 
     res.json(group);
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ error: "Bu nomdagi guruh allaqachon mavjud" });
-    }
     res.status(400).json({ error: error.message });
   }
 };
