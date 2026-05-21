@@ -228,7 +228,8 @@ export default function TeacherDashboard() {
             {groups.length === 0 ? (
               <div className="text-center py-8 text-slate-500 sm:col-span-2 xl:col-span-3">Hozircha guruh yo'q.</div>
             ) : groups.map((group) => {
-              const studentsInGroup = students.filter((student) => student.group === group.name).length;
+              const groupStudents = students.filter((student) => student.group === group.name);
+              const studentsInGroup = groupStudents.length;
               return (
                 <div key={group._id} className={`rounded-2xl p-4 bg-slate-50/70 dark:bg-slate-900/50 shadow-sm transition ${recentGroupId === group._id ? "ring-2 ring-emerald-200 dark:ring-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-500/10" : ""}`}>
                   <div className="flex items-start justify-between gap-3">
@@ -245,7 +246,22 @@ export default function TeacherDashboard() {
                       {studentsInGroup} ta
                     </span>
                   </div>
-                  <div className="flex gap-2 mt-4">
+                  
+                  {groupStudents.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 space-y-1">
+                      <div className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'quvchilar ro'yxati:</div>
+                      <div className="max-h-32 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                        {groupStudents.map((st) => (
+                          <div key={st._id} className="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 py-0.5 border-b border-dashed border-slate-100 dark:border-slate-800 last:border-0">
+                            <span className="font-medium truncate">{st.firstName} {st.lastName}</span>
+                            <span className="text-[10px] text-slate-400 flex-shrink-0 ml-2">{st.phone || ""}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 mt-4 pt-2 border-t border-slate-100 dark:border-slate-800/50">
                     <button type="button" onClick={() => openGroupEditor(group)} className="text-sm font-medium text-brand-600 hover:underline">Tahrirlash</button>
                     <button type="button" onClick={() => removeGroup(group._id)} className="text-sm font-medium text-rose-600 hover:underline">O'chirish</button>
                   </div>
