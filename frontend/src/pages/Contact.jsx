@@ -186,7 +186,7 @@ export default function Contact() {
       icon: "📍",
       label: "Manzil",
       value: "Qashqadaryo, Qamashi tumani, Amir Temur ko'chasi",
-      href: null,
+      href: "https://www.google.com/maps/search/?api=1&query=Zamaxshar+O%27quv+markazi+Qamashi",
       color: "from-violet-400 to-violet-600",
     },
     {
