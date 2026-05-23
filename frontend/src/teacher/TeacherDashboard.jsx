@@ -311,7 +311,6 @@ export default function TeacherDashboard() {
                   )}
 
                   <div className="flex gap-2 mt-4 pt-2 border-t border-slate-100 dark:border-slate-800/50">
-                    <button type="button" onClick={() => openGroupEditor(group)} className="text-sm font-medium text-brand-600 hover:underline">Tahrirlash</button>
                     <button type="button" onClick={() => removeGroup(group._id)} className="text-sm font-medium text-rose-600 hover:underline">O'chirish</button>
                   </div>
                 </div>
@@ -338,7 +337,6 @@ export default function TeacherDashboard() {
                     <th className="px-4 py-3 text-left">Guruh</th>
                     <th className="px-4 py-3 text-left">Dars vaqti</th>
                     <th className="px-4 py-3 text-left">To'lov</th>
-                    <th className="px-4 py-3 text-right">Amal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -365,11 +363,6 @@ export default function TeacherDashboard() {
                           s.paymentStatus === "expired" ? "bg-rose-100 text-rose-700" :
                           "bg-amber-100 text-amber-700"
                         }`}>{s.paymentStatus}</span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <button onClick={() => openScheduleEditor(s)} className="text-brand-600 hover:underline text-xs font-medium">
-                          Tahrirlash
-                        </button>
                       </td>
                     </tr>
                   ))}
