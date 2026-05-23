@@ -26,10 +26,15 @@ const makeBlank = () => {
     group: "", lessonStartTime: "", lessonEndTime: "",
     paymentStatus: "unpaid",
     validFrom: toISODate(today),
-    validUntil: toISODate(addDays(today, 30))
+    validUntil: toISODate(addDays(today, 30)),
+    enrollments: []
   };
 };
 const blank = makeBlank();
+const blankEnrollment = () => {
+  const today = new Date();
+  return { course: "", teacher: "", group: "", lessonStartTime: "", lessonEndTime: "", paymentStatus: "unpaid", validFrom: toISODate(today), validUntil: toISODate(addDays(today, 30)), status: "active" };
+};
 
 export default function StudentsAdmin() {
   const { t } = useTranslation();
@@ -84,6 +89,14 @@ export default function StudentsAdmin() {
     }
   };
 
+  const addEnrollment = () => setForm((f) => ({ ...f, enrollments: [...f.enrollments, blankEnrollment()] }));
+  const removeEnrollment = (idx) => setForm((f) => ({ ...f, enrollments: f.enrollments.filter((_, i) => i !== idx) }));
+  const updateEnrollment = (idx, key, val) => setForm((f) => {
+    const updated = [...f.enrollments];
+    updated[idx] = { ...updated[idx], [key]: val };
+    return { ...f, enrollments: updated };
+  });
+
   const startEdit = (s) => {
     setEditing(s._id);
     setForm({
@@ -92,7 +105,18 @@ export default function StudentsAdmin() {
       group: s.group || "", lessonStartTime: s.lessonStartTime || "", lessonEndTime: s.lessonEndTime || "",
       paymentStatus: s.paymentStatus,
       validFrom: s.validFrom ? s.validFrom.slice(0, 10) : "",
-      validUntil: s.validUntil ? s.validUntil.slice(0, 10) : ""
+      validUntil: s.validUntil ? s.validUntil.slice(0, 10) : "",
+      enrollments: (s.enrollments || []).map((e) => ({
+        course: e.course?._id || e.course || "",
+        teacher: e.teacher?._id || e.teacher || "",
+        group: e.group || "",
+        lessonStartTime: e.lessonStartTime || "",
+        lessonEndTime: e.lessonEndTime || "",
+        paymentStatus: e.paymentStatus || "unpaid",
+        validFrom: e.validFrom ? e.validFrom.slice(0, 10) : "",
+        validUntil: e.validUntil ? e.validUntil.slice(0, 10) : "",
+        status: e.status || "active"
+      }))
     });
   };
 
@@ -268,7 +292,75 @@ export default function StudentsAdmin() {
                 <input type="date" className="input" value={form.validUntil} onChange={(e) => setForm({ ...form, validUntil: e.target.value })} />
               </div>
             </div>
-            <div className="flex gap-2 justify-end pt-2">
+            {/* Enrollments */}
+            <div className="sm:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                <span className="label font-semibold text-sm">Fanlar va jadval (bir nechta)</span>
+                <button type="button" onClick={addEnrollment} className="text-sm text-brand-600 hover:underline font-medium">+ Fan qo'shish</button>
+              </div>
+              {form.enrollments.length === 0 ? (
+                <div className="border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-center text-sm text-slate-400">
+                  Hali fan qo'shilmagan. "+ Fan qo'shish" tugmasini bosing.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {form.enrollments.map((en, idx) => (
+                    <div key={idx} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2 bg-slate-50/50 dark:bg-slate-800/40">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-brand-600">Fan #{idx + 1}</span>
+                        <button type="button" onClick={() => removeEnrollment(idx)} className="text-xs text-rose-500 hover:underline">O'chirish</button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="label block mb-1 text-xs">Kurs</label>
+                          <select className="input text-sm" value={en.course} onChange={(e) => updateEnrollment(idx, "course", e.target.value)}>
+                            <option value="">—</option>
+                            {courses.map((c) => <option key={c._id} value={c._id}>{c.titleUz}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">Ustoz</label>
+                          <select className="input text-sm" value={en.teacher} onChange={(e) => updateEnrollment(idx, "teacher", e.target.value)}>
+                            <option value="">—</option>
+                            {teachers.map((tc) => <option key={tc._id} value={tc._id}>{tc.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">Guruh</label>
+                          <input className="input text-sm" placeholder="1-guruh" value={en.group} onChange={(e) => updateEnrollment(idx, "group", e.target.value)} />
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">To'lov holati</label>
+                          <select className="input text-sm" value={en.paymentStatus} onChange={(e) => updateEnrollment(idx, "paymentStatus", e.target.value)}>
+                            <option value="unpaid">To'lanmagan</option>
+                            <option value="paid">To'langan</option>
+                            <option value="expired">Muddati tugagan</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">Boshlanish vaqti</label>
+                          <input className="input text-sm" placeholder="08:00" value={en.lessonStartTime} onChange={(e) => updateEnrollment(idx, "lessonStartTime", e.target.value)} />
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">Tugash vaqti</label>
+                          <input className="input text-sm" placeholder="10:00" value={en.lessonEndTime} onChange={(e) => updateEnrollment(idx, "lessonEndTime", e.target.value)} />
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">To'lov boshlanish</label>
+                          <input type="date" className="input text-sm" value={en.validFrom} onChange={(e) => updateEnrollment(idx, "validFrom", e.target.value)} />
+                        </div>
+                        <div>
+                          <label className="label block mb-1 text-xs">To'lov tugash</label>
+                          <input type="date" className="input text-sm" value={en.validUntil} onChange={(e) => updateEnrollment(idx, "validUntil", e.target.value)} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 justify-end pt-2 sm:col-span-2">
               <button type="button" onClick={() => setEditing(null)} className="btn-secondary">Bekor</button>
               <button type="submit" className="btn-primary">Saqlash</button>
             </div>
