@@ -44,6 +44,102 @@ const socialLinks = [
   },
 ];
 
+function ClockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const SCHEDULE = [
+  { day: "Dushanba",   short: "Du",  hours: "08:00 – 20:00", open: true },
+  { day: "Seshanba",   short: "Se",  hours: "08:00 – 20:00", open: true },
+  { day: "Chorshanba", short: "Ch",  hours: "08:00 – 20:00", open: true },
+  { day: "Payshanba",  short: "Pa",  hours: "08:00 – 20:00", open: true },
+  { day: "Juma",       short: "Ju",  hours: "08:00 – 20:00", open: true },
+  { day: "Shanba",     short: "Sh",  hours: "08:00 – 20:00", open: true },
+  { day: "Yakshanba",  short: "Ya",  hours: "Yopiq",          open: false },
+];
+
+function WorkingHoursCard({ i }) {
+  const now = new Date();
+  const todayIdx = now.getDay();
+  const mappedIdx = todayIdx === 0 ? 6 : todayIdx - 1;
+  const currentHour = now.getHours() + now.getMinutes() / 60;
+  const isOpenNow = mappedIdx < 6 && currentHour >= 8 && currentHour < 20;
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      custom={i}
+      variants={fadeUp}
+      className="group"
+    >
+      <div className="relative h-full overflow-hidden rounded-[30px] border border-amber-200/60 dark:border-amber-500/20 bg-white/95 dark:bg-slate-900/95 p-6 shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_30px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)] cursor-default">
+
+        {/* Glow blob */}
+        <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-amber-500/10 dark:bg-amber-400/8 blur-2xl" />
+
+        <div className="relative">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/25 grid place-items-center ring-8 ring-white/70 dark:ring-slate-900/70 shrink-0">
+                <ClockIcon />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold tracking-[0.22em] text-slate-500 dark:text-slate-400 uppercase">Ish vaqti</p>
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold mt-0.5 ${
+                  isOpenNow
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${ isOpenNow ? "bg-emerald-500" : "bg-rose-500" }`} />
+                  {isOpenNow ? "Hozir ochiq" : "Hozir yopiq"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Schedule rows */}
+          <div className="space-y-1">
+            {SCHEDULE.map((row, idx) => {
+              const isToday = idx === mappedIdx;
+              return (
+                <div
+                  key={row.day}
+                  className={`flex items-center justify-between rounded-xl px-3 py-1.5 text-sm transition-colors ${
+                    isToday
+                      ? "bg-amber-50 dark:bg-amber-500/10 ring-1 ring-amber-200 dark:ring-amber-500/30"
+                      : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  }`}
+                >
+                  <span className={`font-semibold ${ isToday ? "text-amber-700 dark:text-amber-300" : "text-slate-600 dark:text-slate-400" }`}>
+                    {row.day}
+                    {isToday && <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-500">(Bugun)</span>}
+                  </span>
+                  <span className={`font-bold text-xs ${
+                    row.open
+                      ? isToday ? "text-amber-700 dark:text-amber-300" : "text-slate-800 dark:text-white"
+                      : "text-rose-500 dark:text-rose-400"
+                  }`}>
+                    {row.hours}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r from-amber-300 to-orange-200 dark:from-amber-500/50 dark:to-orange-500/20" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function SocialGlyph({ type }) {
   const common = "h-7 w-7 sm:h-8 sm:w-8 text-white";
 
@@ -189,14 +285,6 @@ export default function Contact() {
       href: "https://www.google.com/maps/search/?api=1&query=Zamaxshar+O%27quv+markazi+Qamashi",
       color: "from-violet-400 to-violet-600",
     },
-    {
-      key: "time",
-      icon: "🕐",
-      label: "Ish vaqti",
-      value: "Du–Sha: 09:00 – 18:00",
-      href: null,
-      color: "from-amber-400 to-orange-500",
-    },
   ];
 
   return (
@@ -228,6 +316,7 @@ export default function Contact() {
           {contacts.map((c, i) => (
             <ContactCard key={c.label} item={c} i={i} />
           ))}
+          <WorkingHoursCard i={contacts.length} />
         </div>
 
         {/* Social links */}
