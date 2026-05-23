@@ -63,9 +63,10 @@ export default function StudentsAdmin() {
     e.preventDefault();
     try {
       const payload = { ...form };
-      if (editing && !payload.password) delete payload.password;
-      if (editing && !payload.phone) delete payload.phone;
-      if (editing) await api.put(`/students/${editing}`, payload);
+      const isNew = editing === "new";
+      if (!isNew && !payload.password) delete payload.password;
+      if (!isNew && !payload.phone) delete payload.phone;
+      if (!isNew) await api.put(`/students/${editing}`, payload);
       else await api.post("/students", payload);
       toast.success("Saqlandi");
       setEditing(null); setForm(blank); load();
