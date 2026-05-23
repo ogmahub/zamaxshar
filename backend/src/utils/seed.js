@@ -32,7 +32,7 @@ const run = async () => {
       descriptionRu: "Курс по орфографии, анализу текста и сочинению.",
       descriptionEn: "Course on spelling, text analysis and essay writing.",
       price: 500000,
-      duration: "6 oy",
+      duration: "1 oy",
       format: "offline",
       modules: ["Fonetika", "Morfologiya", "Sintaksis", "Adabiyot tahlili"],
       results: ["To'g'ri imlo", "Insho yozish", "Adabiy tahlil"]
@@ -45,7 +45,7 @@ const run = async () => {
       descriptionRu: "Курс подготовки к DTM и международным тестам.",
       descriptionEn: "Preparation course for DTM and international tests.",
       price: 600000,
-      duration: "8 oy",
+      duration: "1 oy",
       format: "offline",
       modules: ["Algebra", "Geometriya", "Trigonometriya"],
       results: ["DTM-ga tayyorlik", "IELTS Math", "SAT"]
@@ -58,7 +58,7 @@ const run = async () => {
       descriptionRu: "Подготовка к IELTS и CEFR.",
       descriptionEn: "IELTS and CEFR preparation course.",
       price: 700000,
-      duration: "10 oy",
+      duration: "1 oy",
       format: "online",
       modules: ["Grammar", "Speaking", "Writing", "Listening"],
       results: ["IELTS 6.5+", "CEFR B2+"]

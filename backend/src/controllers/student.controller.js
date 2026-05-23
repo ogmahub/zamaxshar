@@ -1,4 +1,5 @@
 import Student from "../models/Student.js";
+import Group from "../models/Group.js";
 import { hashPassword } from "../utils/hashPassword.js";
 
 const sanitizeSchedule = (input = {}) => ({
@@ -112,7 +113,19 @@ export const myProfile = async (req, res) => {
       .select("-passwordHash -passwordPlain")
       .populate("course teacher");
     if (!student) return res.status(404).json({ error: "Student topilmadi" });
-    res.json(student);
+
+    const result = student.toObject();
+
+    if (student.group && student.teacher) {
+      const group = await Group.findOne({ name: student.group, teacher: student.teacher._id || student.teacher });
+      if (group) {
+        result.groupWeekdays = group.weekdays || [];
+        result.groupStartTime = group.lessonStartTime || "";
+        result.groupEndTime = group.lessonEndTime || "";
+      }
+    }
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

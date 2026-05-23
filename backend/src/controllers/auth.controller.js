@@ -19,6 +19,7 @@ export const adminLogin = async (req, res) => {
     setAuthCookie(res, token);
 
     res.json({
+      token,
       user: {
         id: admin._id,
         username: admin.username,
@@ -47,6 +48,7 @@ export const studentLogin = async (req, res) => {
     setAuthCookie(res, token);
 
     res.json({
+      token,
       user: {
         id: student._id,
         firstName: student.firstName,
@@ -78,6 +80,7 @@ export const teacherLogin = async (req, res) => {
     setAuthCookie(res, token);
 
     res.json({
+      token,
       user: {
         id: teacher._id,
         name: teacher.name,

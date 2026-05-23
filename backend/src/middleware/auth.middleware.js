@@ -1,9 +1,20 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/Admin.js";
 
+const getTokenFromRequest = (req) => {
+  const cookieToken = req.cookies?.token;
+  if (cookieToken) return cookieToken;
+
+  const header = req.headers?.authorization || req.get?.("authorization");
+  if (!header) return null;
+
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : null;
+};
+
 export const softAuth = (req, _res, next) => {
   try {
-    const token = req.cookies?.token;
+    const token = getTokenFromRequest(req);
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
@@ -15,7 +26,7 @@ export const softAuth = (req, _res, next) => {
 export const protect = (allowedRoles = []) => {
   return (req, res, next) => {
     try {
-      const token = req.cookies?.token;
+      const token = getTokenFromRequest(req);
       if (!token) return res.status(401).json({ error: "Avtorizatsiyadan o'tmagan" });
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);

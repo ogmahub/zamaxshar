@@ -9,7 +9,7 @@ const courseSchema = new mongoose.Schema(
     descriptionRu: { type: String, default: "" },
     descriptionEn: { type: String, default: "" },
     price: { type: Number, default: 0 },
-    duration: { type: String, default: "" },
+    duration: { type: String, default: "1 oy" },
     format: { type: String, default: "offline" },
     image: { type: String, default: "" },
     modules: { type: [String], default: [] },

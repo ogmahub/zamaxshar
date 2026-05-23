@@ -6,7 +6,7 @@ import api from "../api/axios.js";
 const blank = {
   titleUz: "", titleRu: "", titleEn: "",
   descriptionUz: "", descriptionRu: "", descriptionEn: "",
-  price: 0, duration: "", format: "offline",
+  price: 0, duration: "1 oy", format: "offline",
   modules: "", results: "", isActive: true
 };
 
@@ -28,6 +28,7 @@ export default function CoursesAdmin() {
       descriptionRu: form.descriptionUz,
       descriptionEn: form.descriptionUz,
       price: Number(form.price) || 0,
+      duration: "1 oy",
       modules: form.modules.split("\n").map((m) => m.trim()).filter(Boolean),
       results: form.results.split("\n").map((m) => m.trim()).filter(Boolean)
     };
@@ -91,7 +92,7 @@ export default function CoursesAdmin() {
               <div className="sm:col-span-3"><label className="label block mb-1">Kurs nomi</label><input className="input" required value={form.titleUz} onChange={(e) => setForm({ ...form, titleUz: e.target.value })} /></div>
               <div className="sm:col-span-3"><label className="label block mb-1">Tavsif</label><textarea className="input" rows={3} value={form.descriptionUz} onChange={(e) => setForm({ ...form, descriptionUz: e.target.value })} /></div>
               <div><label className="label block mb-1">Narx</label><input type="number" className="input" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
-              <div><label className="label block mb-1">Davomiylik</label><input className="input" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} /></div>
+              <div><label className="label block mb-1">Davomiylik</label><input className="input bg-slate-100 dark:bg-slate-800 cursor-not-allowed" value="1 oy" readOnly /></div>
               <div>
                 <label className="label block mb-1">Format</label>
                 <select className="input" value={form.format} onChange={(e) => setForm({ ...form, format: e.target.value })}>

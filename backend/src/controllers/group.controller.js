@@ -1,6 +1,12 @@
 import Group from "../models/Group.js";
 
 const normalizeName = (value = "") => value.trim();
+const allowedWeekdays = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+
+const normalizeWeekdays = (value) => {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map((item) => String(item || "").trim()).filter((item) => allowedWeekdays.includes(item)))];
+};
 
 const validateTimeRange = (start, end) => {
   if (!/^\d{2}:\d{2}$/.test(start) || !/^\d{2}:\d{2}$/.test(end)) {
@@ -15,6 +21,7 @@ const validateTimeRange = (start, end) => {
 const groupPayload = (req) => ({
   teacher: req.user?.id,
   name: normalizeName(req.body?.name),
+  weekdays: normalizeWeekdays(req.body?.weekdays),
   lessonStartTime: (req.body?.lessonStartTime || "").trim(),
   lessonEndTime: (req.body?.lessonEndTime || "").trim()
 });
@@ -32,6 +39,7 @@ export const createGroup = async (req, res) => {
   try {
     const payload = groupPayload(req);
     if (!payload.name) return res.status(400).json({ error: "Guruh nomi kiritilsin" });
+    if (!payload.weekdays.length) return res.status(400).json({ error: "Kamida bitta hafta kuni tanlang" });
     if (!payload.lessonStartTime || !payload.lessonEndTime) {
       return res.status(400).json({ error: "Boshlanish va tugash vaqtini kiriting" });
     }
@@ -52,14 +60,17 @@ export const updateGroup = async (req, res) => {
     if (!group) return res.status(404).json({ error: "Guruh topilmadi" });
 
     const name = normalizeName(req.body?.name ?? group.name);
+    const weekdays = normalizeWeekdays(req.body?.weekdays ?? group.weekdays);
     const lessonStartTime = (req.body?.lessonStartTime ?? group.lessonStartTime).trim();
     const lessonEndTime = (req.body?.lessonEndTime ?? group.lessonEndTime).trim();
 
     if (!name) return res.status(400).json({ error: "Guruh nomi kiritilsin" });
+    if (!weekdays.length) return res.status(400).json({ error: "Kamida bitta hafta kuni tanlang" });
     const rangeError = validateTimeRange(lessonStartTime, lessonEndTime);
     if (rangeError) return res.status(400).json({ error: rangeError });
 
     group.name = name;
+    group.weekdays = weekdays;
     group.lessonStartTime = lessonStartTime;
     group.lessonEndTime = lessonEndTime;
     await group.save();

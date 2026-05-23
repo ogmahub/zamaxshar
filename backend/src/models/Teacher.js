@@ -6,6 +6,7 @@ const teacherSchema = new mongoose.Schema(
     username: { type: String, trim: true, sparse: true, unique: true },
     passwordHash: { type: String, default: "" },
     passwordPlain: { type: String, default: "" },
+    salary: { type: Number, default: 0 },
     phone: { type: String, default: "", trim: true },
     subject: { type: String, default: "", trim: true },
     bio: { type: String, default: "" },

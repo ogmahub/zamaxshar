@@ -7,7 +7,7 @@ Zamonaviy MERN stack asosida qurilgan o'quv markaz boshqaruv platformasi.
 **Backend:**
 - Node.js + Express
 - MongoDB + Mongoose
-- JWT + httpOnly cookies
+- JWT + httpOnly cookies    
 - bcryptjs
 
 **Frontend:**

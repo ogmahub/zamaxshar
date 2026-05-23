@@ -13,25 +13,37 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const [apps, students, courses, teachers] = await Promise.all([
-          api.get("/applications"),
-          api.get("/students"),
-          api.get("/courses"),
-          api.get("/teachers")
-        ]);
-        setStats({
-          apps: apps.data.length,
-          newApps: apps.data.filter((a) => a.status === "new").length,
-          accepted: apps.data.filter((a) => a.status === "accepted").length,
-          rejected: apps.data.filter((a) => a.status === "rejected").length,
-          students: students.data.length,
-          paid: students.data.filter((s) => s.paymentStatus === "paid").length,
-          unpaid: students.data.filter((s) => s.paymentStatus === "unpaid").length,
-          courses: courses.data.length,
-          teachers: teachers.data.length
-        });
-      } catch {}
+      const results = await Promise.allSettled([
+        api.get("/applications"),
+        api.get("/students"),
+        api.get("/courses"),
+        api.get("/teachers")
+      ]);
+      const toArr = (raw) => {
+        if (Array.isArray(raw)) return raw;
+        if (raw && typeof raw === "object") {
+          for (const k of ["items","data","applications","students","courses","teachers","list","results"]) {
+            if (Array.isArray(raw[k])) return raw[k];
+          }
+        }
+        return [];
+      };
+      const val = (i) => toArr(results[i].status === "fulfilled" ? results[i].value?.data : null);
+      const apps = val(0);
+      const students = val(1);
+      const courses = val(2);
+      const teachers = val(3);
+      setStats({
+        apps: apps.length,
+        newApps: apps.filter((a) => a.status === "new").length,
+        accepted: apps.filter((a) => a.status === "accepted").length,
+        rejected: apps.filter((a) => a.status === "rejected").length,
+        students: students.length,
+        paid: students.filter((s) => s.paymentStatus === "paid").length,
+        unpaid: students.filter((s) => s.paymentStatus === "unpaid").length,
+        courses: courses.length,
+        teachers: teachers.length
+      });
     })();
   }, []);
 
@@ -49,7 +61,9 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl md:text-3xl font-bold mb-6">{t("admin.dashboard")}</h1>
+      <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+        <h1 className="text-2xl md:text-3xl font-bold">{t("admin.dashboard")}</h1>
+      </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {cards.map((c, i) => (
           <Link key={i} to={c.to} className="card p-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group cursor-pointer block">

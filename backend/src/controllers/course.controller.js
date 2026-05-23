@@ -36,7 +36,8 @@ export const getCourse = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const course = await Course.create(req.body);
+    const payload = { ...req.body, duration: "1 oy" };
+    const course = await Course.create(payload);
     res.status(201).json(course);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -45,7 +46,8 @@ export const createCourse = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const payload = { ...req.body, duration: "1 oy" };
+    const course = await Course.findByIdAndUpdate(req.params.id, payload, { new: true });
     if (!course) return res.status(404).json({ error: "Kurs topilmadi" });
     res.json(course);
   } catch (error) {

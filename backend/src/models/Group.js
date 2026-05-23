@@ -4,6 +4,7 @@ const groupSchema = new mongoose.Schema(
   {
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher", required: true, index: true },
     name: { type: String, required: true, trim: true },
+    weekdays: { type: [String], default: [] },
     lessonStartTime: { type: String, required: true, trim: true },
     lessonEndTime: { type: String, required: true, trim: true }
   },

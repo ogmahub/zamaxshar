@@ -6,6 +6,7 @@ import api from "../api/axios.js";
 export default function TeacherDashboard() {
   const { activeSection } = useOutletContext() || { activeSection: "dashboard" };
   const { user } = useAuth();
+  const weekdayOptions = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
   const [students, setStudents] = useState([]);
   const [groups, setGroups] = useState([]);
   const [recentGroupId, setRecentGroupId] = useState(null);
@@ -14,7 +15,8 @@ export default function TeacherDashboard() {
   const [editingStudent, setEditingStudent] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({ group: "", lessonStartTime: "", lessonEndTime: "" });
   const [editingGroup, setEditingGroup] = useState(null);
-  const [groupForm, setGroupForm] = useState({ name: "", lessonStartTime: "", lessonEndTime: "" });
+  const [groupForm, setGroupForm] = useState({ name: "", weekdays: [], lessonStartTime: "", lessonEndTime: "" });
+  const [groupError, setGroupError] = useState("");
 
   const loadStudents = async () => {
     try {
@@ -37,12 +39,14 @@ export default function TeacherDashboard() {
   }, [user]);
 
   const openGroupEditor = (group = null) => {
+    setGroupError("");
     setEditingGroup(group);
     setGroupForm(group ? {
       name: group.name || "",
+      weekdays: Array.isArray(group.weekdays) ? group.weekdays : [],
       lessonStartTime: group.lessonStartTime || "",
       lessonEndTime: group.lessonEndTime || ""
-    } : { name: "", lessonStartTime: "", lessonEndTime: "" });
+    } : { name: "", weekdays: [], lessonStartTime: "", lessonEndTime: "" });
     requestAnimationFrame(() => {
       groupsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -50,12 +54,18 @@ export default function TeacherDashboard() {
 
   const closeGroupEditor = () => {
     setEditingGroup(null);
-    setGroupForm({ name: "", lessonStartTime: "", lessonEndTime: "" });
+    setGroupError("");
+    setGroupForm({ name: "", weekdays: [], lessonStartTime: "", lessonEndTime: "" });
   };
 
   const saveGroup = async (e) => {
     e.preventDefault();
+    if (!groupForm.weekdays.length) {
+      setGroupError("Kamida bitta hafta kuni tanlang");
+      return;
+    }
     try {
+      setGroupError("");
       if (editingGroup) {
         const { data } = await api.put(`/groups/${editingGroup._id}`, groupForm);
         setGroups((list) => list.map((item) => (item._id === data._id ? data : item)));
@@ -73,7 +83,7 @@ export default function TeacherDashboard() {
         groupsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     } catch (err) {
-      alert(err.response?.data?.error || err.message || "Xato yuz berdi. Internet aloqasi yoki serverni tekshiring");
+      setGroupError(err.response?.data?.error || err.message || "Xato yuz berdi. Internet aloqasi yoki serverni tekshiring");
     }
   };
 
@@ -184,6 +194,12 @@ export default function TeacherDashboard() {
               <p className="text-sm text-slate-500 mt-1">Guruh nomi va dars vaqtlarini kiriting, keyin yaratish tugmasini bosing.</p>
             </div>
 
+            {groupError && (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3 text-sm font-medium">
+                {groupError}
+              </div>
+            )}
+
             <form onSubmit={saveGroup} className="grid md:grid-cols-[1.3fr_1fr_1fr_auto] gap-3 items-end">
               <div>
                 <label className="label block mb-1">Guruh nomi</label>
@@ -192,6 +208,30 @@ export default function TeacherDashboard() {
                   value={groupForm.name}
                   onChange={(e) => setGroupForm((s) => ({ ...s, name: e.target.value }))}
                 />
+              </div>
+              <div className="md:col-span-3">
+                <label className="label block mb-1">Hafta kunlari</label>
+                <div className="flex flex-wrap gap-2">
+                  {weekdayOptions.map((day) => {
+                    const checked = groupForm.weekdays.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setGroupForm((s) => ({
+                          ...s,
+                          weekdays: checked ? s.weekdays.filter((item) => item !== day) : [...s.weekdays, day]
+                        }))}
+                        className={`px-3 py-2 rounded-xl border text-sm font-medium transition ${checked ? "bg-brand-600 text-white border-brand-600" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-brand-400"}`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-2 text-xs text-slate-500">
+                  Tanlangan kunlar: {groupForm.weekdays.length > 0 ? groupForm.weekdays.join(", ") : "Hali tanlanmadi"}
+                </div>
               </div>
               <div>
                 <label className="label block mb-1">Boshlanish vaqti</label>
@@ -236,6 +276,12 @@ export default function TeacherDashboard() {
                     <div>
                       <div className="font-semibold text-base">{group.name}</div>
                       <div className="text-sm text-slate-500 mt-1">{group.lessonStartTime} - {group.lessonEndTime}</div>
+                      {Array.isArray(group.weekdays) && group.weekdays.length > 0 && (
+                        <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">Hafta kunlari:</span>{" "}
+                          {group.weekdays.join(", ")}
+                        </div>
+                      )}
                     </div>
                     {recentGroupId === group._id && (
                       <span className="px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
@@ -246,7 +292,7 @@ export default function TeacherDashboard() {
                       {studentsInGroup} ta
                     </span>
                   </div>
-                  
+
                   {groupStudents.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 space-y-1">
                       <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'quvchilar ro'yxati:</div>
@@ -303,7 +349,16 @@ export default function TeacherDashboard() {
                       <td className="px-4 py-3">{s.phone || "—"}</td>
                       <td className="px-4 py-3">{s.course?.titleUz || "—"}</td>
                       <td className="px-4 py-3">{s.group || "—"}</td>
-                      <td className="px-4 py-3">{s.lessonStartTime && s.lessonEndTime ? `${s.lessonStartTime} - ${s.lessonEndTime}` : "—"}</td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-1">
+                          <div>{s.lessonStartTime && s.lessonEndTime ? `${s.lessonStartTime} - ${s.lessonEndTime}` : "—"}</div>
+                          {groups.find((group) => group.name === s.group)?.weekdays?.length > 0 && (
+                            <div className="text-xs text-slate-500">
+                              {groups.find((group) => group.name === s.group)?.weekdays.join(", ")}
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           s.paymentStatus === "paid" ? "bg-emerald-100 text-emerald-700" :
@@ -377,7 +432,12 @@ export default function TeacherDashboard() {
                 }}
               />
               {groupMatch && (
-                <div className="mt-1 text-xs text-slate-500">Tanlangan guruh vaqti: {groupMatch.lessonStartTime} - {groupMatch.lessonEndTime}</div>
+                <div className="mt-1 text-xs text-slate-500 space-y-1">
+                  <div>Tanlangan guruh vaqti: {groupMatch.lessonStartTime} - {groupMatch.lessonEndTime}</div>
+                  {Array.isArray(groupMatch.weekdays) && groupMatch.weekdays.length > 0 && (
+                    <div>Hafta kunlari: {groupMatch.weekdays.join(", ")}</div>
+                  )}
+                </div>
               )}
             </div>
 

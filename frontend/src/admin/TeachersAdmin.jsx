@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import api from "../api/axios.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
-const blank = { name: "", username: "", password: "", phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
+const blank = { name: "", username: "", password: "", salary: 0, phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
 const schoolSubjects = [
   "Ona tili",
   "Adabiyot",
@@ -118,6 +118,7 @@ export default function TeachersAdmin() {
             </div>
             <h3 className="font-bold">{tc.name}</h3>
             <p className="text-sm text-brand-600 mb-1">{tc.subject}</p>
+            <p className="text-xs text-slate-500 mb-2">Oylik: {Number(tc.salary || 0).toLocaleString()} so'm</p>
             <p className="text-xs text-slate-500 line-clamp-2 mb-2">{tc.bio}</p>
             {tc.certificate && (
               <button onClick={() => setPreviewCert(tc)} className="text-xs text-brand-600 hover:underline mb-3">
@@ -242,6 +243,15 @@ export default function TeachersAdmin() {
                         onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 9) })}
                       />
                     </div>
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-600 dark:text-slate-400 block mb-1.5">Oylik maosh</label>
+                    <input
+                      type="number"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
+                      value={form.salary || 0}
+                      onChange={(e) => setForm({ ...form, salary: Number(e.target.value) || 0 })}
+                    />
                   </div>
                 </div>
 

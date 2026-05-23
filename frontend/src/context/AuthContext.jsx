@@ -7,6 +7,17 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const storeAuth = (data) => {
+    setUser(data.user || null);
+    try {
+      if (data.token) {
+        window.localStorage.setItem("zamaxshar_token", data.token);
+      }
+    } catch {
+      // ignore storage issues
+    }
+  };
+
   const refresh = async () => {
     try {
       const { data } = await api.get("/auth/session");
@@ -24,19 +35,19 @@ export const AuthProvider = ({ children }) => {
 
   const loginAdmin = async (username, password) => {
     const { data } = await api.post("/auth/admin/login", { username, password });
-    setUser(data.user);
+    storeAuth(data);
     return data.user;
   };
 
   const loginStudent = async (username, password) => {
     const { data } = await api.post("/auth/student/login", { username, password });
-    setUser(data.user);
+    storeAuth(data);
     return data.user;
   };
 
   const loginTeacher = async (username, password) => {
     const { data } = await api.post("/auth/teacher/login", { username, password });
-    setUser(data.user);
+    storeAuth(data);
     return data.user;
   };
 
@@ -49,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     for (const ep of endpoints) {
       try {
         const { data } = await api.post(ep.url, { username, password });
-        setUser(data.user);
+        storeAuth(data);
         return { success: true, role: ep.role, user: data.user };
       } catch (error) {
         if (!error.response) {
@@ -63,6 +74,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await api.post("/auth/logout");
     setUser(null);
+    try {
+      window.localStorage.removeItem("zamaxshar_token");
+    } catch {
+      // ignore storage issues
+    }
   };
 
   return (
