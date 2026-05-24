@@ -1,18 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 
+function getDashboard(role) {
+  if (role === 'admin') return '/admin/dashboard';
+  if (role === 'teacher') return '/teacher/dashboard';
+  return '/student/dashboard';
+}
+
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate(getDashboard(user.role), { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +33,7 @@ export default function LoginPage() {
       const result = await login(username, password);
       if (result.success) {
         toast.success("Xush kelibsiz!");
-        if (result.role === 'admin') navigate('/admin/dashboard');
-        else if (result.role === 'student') navigate('/student/dashboard');
-        else if (result.role === 'teacher') navigate('/teacher/dashboard');
+        navigate(getDashboard(result.role), { replace: true });
       } else {
         toast.error(result.message || "Login yoki parol noto'g'ri");
       }

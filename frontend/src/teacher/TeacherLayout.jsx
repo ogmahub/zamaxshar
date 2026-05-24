@@ -12,7 +12,7 @@ export default function TeacherLayout() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/teacher/login");
+    navigate("/login", { replace: true });
   };
 
   const selectSection = (section) => {

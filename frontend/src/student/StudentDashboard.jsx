@@ -24,7 +24,7 @@ export default function StudentDashboard() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/student/login");
+    navigate("/login", { replace: true });
   };
 
   return (

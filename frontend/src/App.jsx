@@ -13,7 +13,6 @@ const Register      = lazy(() => import("./pages/Register.jsx"));
 const Contact       = lazy(() => import("./pages/Contact.jsx"));
 const LoginPage     = lazy(() => import("./pages/LoginPage.jsx"));
 
-const AdminLogin    = lazy(() => import("./admin/AdminLogin.jsx"));
 const Dashboard     = lazy(() => import("./admin/Dashboard.jsx"));
 const Applications  = lazy(() => import("./admin/Applications.jsx"));
 const StudentsAdmin = lazy(() => import("./admin/StudentsAdmin.jsx"));
@@ -21,9 +20,7 @@ const CoursesAdmin  = lazy(() => import("./admin/CoursesAdmin.jsx"));
 const TeachersAdmin = lazy(() => import("./admin/TeachersAdmin.jsx"));
 const AdminsManage  = lazy(() => import("./admin/AdminsManage.jsx"));
 
-const StudentLogin     = lazy(() => import("./student/StudentLogin.jsx"));
 const StudentDashboard = lazy(() => import("./student/StudentDashboard.jsx"));
-const TeacherLogin     = lazy(() => import("./teacher/TeacherLogin.jsx"));
 const TeacherDashboard = lazy(() => import("./teacher/TeacherDashboard.jsx"));
 
 function PageLoader() {
@@ -54,7 +51,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/login" element={<Navigate to="/login" replace />} />
       <Route element={<ProtectedRoute role="admin" />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin/dashboard" element={<Dashboard />} />
@@ -66,12 +63,12 @@ export default function App() {
         </Route>
       </Route>
 
-      <Route path="/student/login" element={<StudentLogin />} />
+      <Route path="/student/login" element={<Navigate to="/login" replace />} />
       <Route element={<ProtectedRoute role="student" />}>
         <Route path="/student/dashboard" element={<StudentDashboard />} />
       </Route>
 
-      <Route path="/teacher/login" element={<TeacherLogin />} />
+      <Route path="/teacher/login" element={<Navigate to="/login" replace />} />
       <Route element={<ProtectedRoute role="teacher" />}>
         <Route element={<TeacherLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />

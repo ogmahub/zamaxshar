@@ -1,16 +1,31 @@
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import i18n from "../i18n/index.js";
 
+function dashboardFor(role) {
+  if (role === "admin") return "/admin/dashboard";
+  if (role === "teacher") return "/teacher/dashboard";
+  return "/student/dashboard";
+}
+
 export default function Navbar() {
   const { t } = useTranslation();
   const { theme, toggle } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  const handleLogout = async () => {
+    setOpen(false);
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
@@ -95,12 +110,29 @@ export default function Navbar() {
             <span className="text-base leading-none">{theme === "dark" ? "☀️" : "🌙"}</span>
           </button>
 
-          <Link
-            to="/login"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold shadow-md shadow-brand-500/25 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
-          >
-            {t("nav.login")}
-          </Link>
+          {user ? (
+            <div className="hidden sm:flex items-center gap-2">
+              <Link
+                to={dashboardFor(user.role)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold hover:bg-brand-100 dark:hover:bg-brand-500/20 transition-all duration-200 whitespace-nowrap"
+              >
+                Kabinet
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 whitespace-nowrap"
+              >
+                Chiqish
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-sm font-semibold shadow-md shadow-brand-500/25 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+            >
+              {t("nav.login")}
+            </Link>
+          )}
 
           <button
             className="md:hidden w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 grid place-items-center transition-colors"
@@ -151,13 +183,31 @@ export default function Navbar() {
                   <option value="ru">RU</option>
                   <option value="en">EN</option>
                 </select>
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 text-center py-2.5 px-4 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold"
-                >
-                  {t("nav.login")}
-                </Link>
+                {user ? (
+                  <div className="flex-1 flex gap-2">
+                    <Link
+                      to={dashboardFor(user.role)}
+                      onClick={() => setOpen(false)}
+                      className="flex-1 text-center py-2.5 px-3 rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold"
+                    >
+                      Kabinet
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex-1 text-center py-2.5 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold"
+                    >
+                      Chiqish
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="flex-1 text-center py-2.5 px-4 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white text-sm font-semibold"
+                  >
+                    {t("nav.login")}
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>
