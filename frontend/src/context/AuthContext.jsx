@@ -64,7 +64,11 @@ export const AuthProvider = ({ children }) => {
         return { success: true, role: ep.role, user: data.user };
       } catch (error) {
         if (!error.response) {
-          return { success: false, message: "Server bilan aloqa yo'q yoki CORS xatosi" };
+          const isTimeout = error.code === "ECONNABORTED" || error.message?.includes("timeout");
+          const msg = isTimeout
+            ? "Server uyg'onmoqda, iltimos 30 soniya kuting va qayta urinib ko'ring..."
+            : "Server bilan aloqa yo'q. CORS yoki tarmoq xatosi.";
+          return { success: false, message: msg };
         }
       }
     }

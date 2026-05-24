@@ -52,13 +52,20 @@ const isAllowedOrigin = (origin = "") => {
   return isLocalPreview || isNetlifyPreview || isVercelPreview;
 };
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, cb) => {
     if (isAllowedOrigin(origin)) return cb(null, true);
     cb(new Error(`CORS: ${origin} ruxsatsiz`));
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  exposedHeaders: ["Set-Cookie"],
+  optionsSuccessStatus: 200
+};
+
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
