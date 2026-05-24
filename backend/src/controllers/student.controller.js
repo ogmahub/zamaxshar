@@ -115,6 +115,54 @@ export const updateTeacherStudent = async (req, res) => {
   }
 };
 
+export const addEnrollment = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ error: "Student topilmadi" });
+
+    const { course } = req.body;
+    if (course) {
+      const alreadyEnrolled = student.enrollments.some(
+        (en) => String(en.course) === String(course)
+      );
+      if (alreadyEnrolled) {
+        return res.status(409).json({ error: "Bu fan allaqachon qo'shilgan" });
+      }
+    }
+
+    student.enrollments.push(req.body);
+    await student.save();
+
+    const updated = await Student.findById(student._id)
+      .select("-passwordHash")
+      .populate("course teacher")
+      .populate("enrollments.course enrollments.teacher");
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const removeEnrollment = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ error: "Student topilmadi" });
+
+    student.enrollments = student.enrollments.filter(
+      (en) => String(en._id) !== String(req.params.enrollmentId)
+    );
+    await student.save();
+
+    const updated = await Student.findById(student._id)
+      .select("-passwordHash")
+      .populate("course teacher")
+      .populate("enrollments.course enrollments.teacher");
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export const deleteStudent = async (req, res) => {
   try {
     const student = await Student.findByIdAndDelete(req.params.id);

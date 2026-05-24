@@ -10,6 +10,7 @@ const enrollmentSchema = new mongoose.Schema({
   paymentStatus:   { type: String, enum: ["paid", "unpaid", "expired"], default: "unpaid" },
   validFrom:       { type: Date },
   validUntil:      { type: Date },
+  format:          { type: String, default: "offline", trim: true },
   status:          { type: String, enum: ["active", "inactive"], default: "active" }
 }, { _id: true });
 

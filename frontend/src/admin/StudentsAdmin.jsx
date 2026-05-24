@@ -28,6 +28,7 @@ const blankEnrollment = () => {
     paymentStatus: "unpaid",
     validFrom: toISODate(today),
     validUntil: toISODate(addDays(today, 30)),
+    format: "offline",
     status: "active"
   };
 };
@@ -57,6 +58,10 @@ export default function StudentsAdmin() {
 
   const submit = async (e) => {
     e.preventDefault();
+    const courseIds = form.enrollments.map((en) => en.course).filter(Boolean);
+    if (new Set(courseIds).size !== courseIds.length) {
+      return toast.error("Bir xil fan ikki marta qo'shilgan. Iltimos tekshiring.");
+    }
     try {
       const payload = { ...form };
       const isNew = editing === "new";
@@ -106,6 +111,7 @@ export default function StudentsAdmin() {
       paymentStatus: e.paymentStatus || "unpaid",
       validFrom: e.validFrom ? e.validFrom.slice(0, 10) : toISODate(new Date()),
       validUntil: e.validUntil ? e.validUntil.slice(0, 10) : toISODate(addDays(new Date(), 30)),
+      format: e.format || "offline",
       status: e.status || "active"
     }));
     const legacyEnrollment = (s.course || s.teacher || s.group) && existingEnrollments.length === 0
@@ -119,6 +125,7 @@ export default function StudentsAdmin() {
           paymentStatus: s.paymentStatus || "unpaid",
           validFrom: s.validFrom ? s.validFrom.slice(0, 10) : toISODate(new Date()),
           validUntil: s.validUntil ? s.validUntil.slice(0, 10) : toISODate(addDays(new Date(), 30)),
+          format: "offline",
           status: "active"
         }]
       : existingEnrollments;
@@ -317,126 +324,179 @@ export default function StudentsAdmin() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {form.enrollments.map((en, idx) => (
-                      <div key={idx} className="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
-                        {/* Enrollment header */}
-                        <div className="flex items-center justify-between px-4 py-2.5 bg-brand-50 dark:bg-brand-500/10 border-b border-slate-200 dark:border-slate-700">
-                          <span className="text-xs font-bold text-brand-700 dark:text-brand-300 flex items-center gap-1.5">
-                            <span className="w-5 h-5 rounded-full bg-brand-600 text-white grid place-items-center text-[10px]">{idx + 1}</span>
-                            Fan #{idx + 1}
-                          </span>
-                          <button type="button" onClick={() => removeEnrollment(idx)}
-                            className="text-xs text-rose-500 hover:text-rose-700 font-medium hover:underline">
-                            O'chirish
-                          </button>
-                        </div>
+                    {form.enrollments.map((en, idx) => {
+                      const selCourse = courses.find((c) => c._id === en.course);
+                      const filteredTeachers = selCourse
+                        ? teachers.filter((t) =>
+                            !t.subject ||
+                            t.subject.trim().toLowerCase() === (selCourse.titleUz || "").trim().toLowerCase()
+                          )
+                        : teachers;
+                      const isDuplicateCourse = en.course &&
+                        form.enrollments.some((other, oi) => oi !== idx && other.course === en.course);
 
-                        <div className="p-4 grid sm:grid-cols-2 gap-3">
-                          {/* Kurs */}
-                          <div>
-                            <label className="label block mb-1 text-xs">Kurs</label>
-                            <select className="input text-sm" value={en.course}
-                              onChange={(e) => updateEnrollment(idx, "course", e.target.value)}>
-                              <option value="">— Kurs tanlang —</option>
-                              {courses.map((c) => <option key={c._id} value={c._id}>{c.titleUz}</option>)}
-                            </select>
-                          </div>
-
-                          {/* Ustoz */}
-                          <div>
-                            <label className="label block mb-1 text-xs">Ustoz</label>
-                            <select className="input text-sm" value={en.teacher}
-                              onChange={(e) => updateEnrollment(idx, "teacher", e.target.value)}>
-                              <option value="">— Ustoz tanlang —</option>
-                              {teachers.map((tc) => <option key={tc._id} value={tc._id}>{tc.name}</option>)}
-                            </select>
-                          </div>
-
-                          {/* Guruh */}
-                          <div>
-                            <label className="label block mb-1 text-xs">Guruh</label>
-                            <input className="input text-sm" placeholder="masalan: 1-guruh"
-                              value={en.group}
-                              onChange={(e) => updateEnrollment(idx, "group", e.target.value)} />
+                      return (
+                        <div key={idx} className={`border rounded-2xl overflow-hidden ${
+                          isDuplicateCourse
+                            ? "border-rose-400 dark:border-rose-500"
+                            : "border-slate-200 dark:border-slate-700"
+                        }`}>
+                          {/* Enrollment header */}
+                          <div className={`flex items-center justify-between px-4 py-2.5 border-b ${
+                            isDuplicateCourse
+                              ? "bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30"
+                              : "bg-brand-50 dark:bg-brand-500/10 border-slate-200 dark:border-slate-700"
+                          }`}>
+                            <span className="text-xs font-bold flex items-center gap-1.5 text-brand-700 dark:text-brand-300">
+                              <span className="w-5 h-5 rounded-full bg-brand-600 text-white grid place-items-center text-[10px]">{idx + 1}</span>
+                              Fan #{idx + 1}
+                              {isDuplicateCourse && <span className="text-rose-600 dark:text-rose-400 ml-1">⚠ Takror fan!</span>}
+                            </span>
+                            <button type="button" onClick={() => removeEnrollment(idx)}
+                              className="text-xs text-rose-500 hover:text-rose-700 font-medium hover:underline">
+                              O'chirish
+                            </button>
                           </div>
 
-                          {/* To'lov holati */}
-                          <div>
-                            <label className="label block mb-1 text-xs">To'lov holati</label>
-                            <select className="input text-sm" value={en.paymentStatus}
-                              onChange={(e) => updateEnrollment(idx, "paymentStatus", e.target.value)}>
-                              <option value="unpaid">To'lanmagan</option>
-                              <option value="paid">To'langan</option>
-                              <option value="expired">Muddati tugagan</option>
-                            </select>
-                          </div>
-
-                          {/* Dars vaqti */}
-                          <div>
-                            <label className="label block mb-1 text-xs">Boshlanish vaqti</label>
-                            <input className="input text-sm font-mono" placeholder="08:00"
-                              value={en.lessonStartTime}
-                              onChange={(e) => updateEnrollment(idx, "lessonStartTime", e.target.value)} />
-                          </div>
-                          <div>
-                            <label className="label block mb-1 text-xs">Tugash vaqti</label>
-                            <input className="input text-sm font-mono" placeholder="10:00"
-                              value={en.lessonEndTime}
-                              onChange={(e) => updateEnrollment(idx, "lessonEndTime", e.target.value)} />
-                          </div>
-
-                          {/* To'lov sanasi */}
-                          <div>
-                            <label className="label block mb-1 text-xs">To'lov boshlanish</label>
-                            <input type="date" className="input text-sm" value={en.validFrom}
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                updateEnrollment(idx, "validFrom", v);
-                                if (v) updateEnrollment(idx, "validUntil", toISODate(addDays(v, 30)));
-                              }} />
-                          </div>
-                          <div>
-                            <label className="label block mb-1 text-xs">To'lov tugash</label>
-                            <input type="date" className="input text-sm" value={en.validUntil}
-                              onChange={(e) => updateEnrollment(idx, "validUntil", e.target.value)} />
-                          </div>
-
-                          {/* Hafta kunlari */}
-                          <div className="sm:col-span-2">
-                            <label className="label block mb-2 text-xs">Hafta kunlari</label>
-                            <div className="flex flex-wrap gap-2">
-                              {WEEKDAYS.map((day) => {
-                                const active = (en.weekdays || []).includes(day);
-                                return (
-                                  <button
-                                    key={day}
-                                    type="button"
-                                    onClick={() => {
-                                      const curr = en.weekdays || [];
-                                      updateEnrollment(idx, "weekdays",
-                                        active ? curr.filter((d) => d !== day) : [...curr, day]
-                                      );
-                                    }}
-                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                                      active
-                                        ? "bg-brand-600 text-white border-brand-600 shadow-sm"
-                                        : "bg-transparent text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-600 hover:border-brand-400 hover:text-brand-600"
-                                    }`}
-                                  >
-                                    {day.slice(0, 2)}
-                                  </button>
-                                );
-                              })}
+                          <div className="p-4 grid sm:grid-cols-2 gap-3">
+                            {/* Kurs */}
+                            <div>
+                              <label className="label block mb-1 text-xs">Kurs</label>
+                              <select className="input text-sm" value={en.course}
+                                onChange={(e) => {
+                                  const newCourseId = e.target.value;
+                                  const newCourse = courses.find((c) => c._id === newCourseId);
+                                  const curTeacher = teachers.find((t) => t._id === en.teacher);
+                                  const teacherMismatch = newCourse && curTeacher?.subject &&
+                                    curTeacher.subject.trim().toLowerCase() !== (newCourse.titleUz || "").trim().toLowerCase();
+                                  updateEnrollment(idx, "course", newCourseId);
+                                  if (teacherMismatch) updateEnrollment(idx, "teacher", "");
+                                }}>
+                                <option value="">— Kurs tanlang —</option>
+                                {courses.map((c) => <option key={c._id} value={c._id}>{c.titleUz}</option>)}
+                              </select>
                             </div>
-                            {(en.weekdays || []).length > 0 && (
-                              <p className="text-xs text-slate-400 mt-1.5">
-                                {(en.weekdays).join(", ")}
-                              </p>
-                            )}
+
+                            {/* Ustoz — fanga ko'ra filtrlangan */}
+                            <div>
+                              <label className="label block mb-1 text-xs">
+                                Ustoz
+                                {selCourse && (
+                                  <span className="ml-1 text-brand-500 font-normal normal-case">
+                                    ({filteredTeachers.length} ta {selCourse.titleUz} ustozlari)
+                                  </span>
+                                )}
+                              </label>
+                              <select className="input text-sm" value={en.teacher}
+                                onChange={(e) => updateEnrollment(idx, "teacher", e.target.value)}>
+                                <option value="">— Ustoz tanlang —</option>
+                                {filteredTeachers.map((tc) => (
+                                  <option key={tc._id} value={tc._id}>{tc.name}{tc.subject ? ` (${tc.subject})` : ""}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Guruh */}
+                            <div>
+                              <label className="label block mb-1 text-xs">Guruh</label>
+                              <input className="input text-sm" placeholder="masalan: 1-guruh"
+                                value={en.group}
+                                onChange={(e) => updateEnrollment(idx, "group", e.target.value)} />
+                            </div>
+
+                            {/* To'lov holati */}
+                            <div>
+                              <label className="label block mb-1 text-xs">To'lov holati</label>
+                              <select className="input text-sm" value={en.paymentStatus}
+                                onChange={(e) => updateEnrollment(idx, "paymentStatus", e.target.value)}>
+                                <option value="unpaid">To'lanmagan</option>
+                                <option value="paid">To'langan</option>
+                                <option value="expired">Muddati tugagan</option>
+                              </select>
+                            </div>
+
+                            {/* Dars vaqti */}
+                            <div>
+                              <label className="label block mb-1 text-xs">Boshlanish vaqti</label>
+                              <input className="input text-sm font-mono" placeholder="08:00"
+                                value={en.lessonStartTime}
+                                onChange={(e) => updateEnrollment(idx, "lessonStartTime", e.target.value)} />
+                            </div>
+                            <div>
+                              <label className="label block mb-1 text-xs">Tugash vaqti</label>
+                              <input className="input text-sm font-mono" placeholder="10:00"
+                                value={en.lessonEndTime}
+                                onChange={(e) => updateEnrollment(idx, "lessonEndTime", e.target.value)} />
+                            </div>
+
+                            {/* Format va Status */}
+                            <div>
+                              <label className="label block mb-1 text-xs">Format</label>
+                              <select className="input text-sm" value={en.format || "offline"}
+                                onChange={(e) => updateEnrollment(idx, "format", e.target.value)}>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                                <option value="hybrid">Hybrid</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="label block mb-1 text-xs">Holat (status)</label>
+                              <select className="input text-sm" value={en.status || "active"}
+                                onChange={(e) => updateEnrollment(idx, "status", e.target.value)}>
+                                <option value="active">Faol</option>
+                                <option value="inactive">Nofaol</option>
+                              </select>
+                            </div>
+
+                            {/* To'lov sanasi */}
+                            <div>
+                              <label className="label block mb-1 text-xs">To'lov boshlanish</label>
+                              <input type="date" className="input text-sm" value={en.validFrom}
+                                onChange={(e) => {
+                                  const v = e.target.value;
+                                  updateEnrollment(idx, "validFrom", v);
+                                  if (v) updateEnrollment(idx, "validUntil", toISODate(addDays(v, 30)));
+                                }} />
+                            </div>
+                            <div>
+                              <label className="label block mb-1 text-xs">To'lov tugash</label>
+                              <input type="date" className="input text-sm" value={en.validUntil}
+                                onChange={(e) => updateEnrollment(idx, "validUntil", e.target.value)} />
+                            </div>
+
+                            {/* Hafta kunlari */}
+                            <div className="sm:col-span-2">
+                              <label className="label block mb-2 text-xs">Hafta kunlari</label>
+                              <div className="flex flex-wrap gap-2">
+                                {WEEKDAYS.map((day) => {
+                                  const active = (en.weekdays || []).includes(day);
+                                  return (
+                                    <button key={day} type="button"
+                                      onClick={() => {
+                                        const curr = en.weekdays || [];
+                                        updateEnrollment(idx, "weekdays",
+                                          active ? curr.filter((d) => d !== day) : [...curr, day]
+                                        );
+                                      }}
+                                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                                        active
+                                          ? "bg-brand-600 text-white border-brand-600 shadow-sm"
+                                          : "bg-transparent text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-600 hover:border-brand-400 hover:text-brand-600"
+                                      }`}
+                                    >
+                                      {day.slice(0, 2)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {(en.weekdays || []).length > 0 && (
+                                <p className="text-xs text-slate-400 mt-1.5">{en.weekdays.join(", ")}</p>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

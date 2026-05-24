@@ -75,12 +75,11 @@ export default function StudentDashboard() {
                         <div className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-1">Fan #{idx + 1}</div>
                         <div className="text-xl font-bold">{en.course?.titleUz || "—"}</div>
                         {en.course?.descriptionUz && <p className="text-sm text-slate-500 mt-1">{en.course.descriptionUz}</p>}
-                        {(en.course?.duration || en.course?.format) && (
-                          <div className="flex gap-2 mt-2 flex-wrap">
-                            {en.course?.duration && <span className="px-2 py-0.5 rounded-full text-xs bg-brand-50 dark:bg-brand-500/10 text-brand-700">{en.course.duration}</span>}
-                            {en.course?.format && <span className="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800">{en.course.format}</span>}
-                          </div>
-                        )}
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                          {en.course?.duration && <span className="px-2 py-0.5 rounded-full text-xs bg-brand-50 dark:bg-brand-500/10 text-brand-700">{en.course.duration}</span>}
+                          {(en.format || en.course?.format) && <span className="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 capitalize">{en.format || en.course?.format}</span>}
+                          {en.status === "inactive" && <span className="px-2 py-0.5 rounded-full text-xs bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">Nofaol</span>}
+                        </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${PAYMENT_COLORS[en.paymentStatus] || PAYMENT_COLORS.unpaid}`}>
                         {en.paymentStatus === "paid" ? "To'langan" : en.paymentStatus === "expired" ? "Muddati tugagan" : "To'lanmagan"}
