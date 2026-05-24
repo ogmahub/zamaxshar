@@ -1,32 +1,48 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import PublicLayout from "./components/PublicLayout.jsx";
-import Home from "./pages/Home.jsx";
-import Courses from "./pages/Courses.jsx";
-import CourseDetail from "./pages/CourseDetail.jsx";
-import Teachers from "./pages/Teachers.jsx";
-import Register from "./pages/Register.jsx";
-import Contact from "./pages/Contact.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-
-import AdminLogin from "./admin/AdminLogin.jsx";
 import AdminLayout from "./admin/AdminLayout.jsx";
-import Dashboard from "./admin/Dashboard.jsx";
-import Applications from "./admin/Applications.jsx";
-import StudentsAdmin from "./admin/StudentsAdmin.jsx";
-import CoursesAdmin from "./admin/CoursesAdmin.jsx";
-import TeachersAdmin from "./admin/TeachersAdmin.jsx";
-import AdminsManage from "./admin/AdminsManage.jsx";
-
-import StudentLogin from "./student/StudentLogin.jsx";
-import StudentDashboard from "./student/StudentDashboard.jsx";
-import TeacherLogin from "./teacher/TeacherLogin.jsx";
-import TeacherDashboard from "./teacher/TeacherDashboard.jsx";
 import TeacherLayout from "./teacher/TeacherLayout.jsx";
-
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+
+const Home          = lazy(() => import("./pages/Home.jsx"));
+const Courses       = lazy(() => import("./pages/Courses.jsx"));
+const CourseDetail  = lazy(() => import("./pages/CourseDetail.jsx"));
+const Teachers      = lazy(() => import("./pages/Teachers.jsx"));
+const Register      = lazy(() => import("./pages/Register.jsx"));
+const Contact       = lazy(() => import("./pages/Contact.jsx"));
+const LoginPage     = lazy(() => import("./pages/LoginPage.jsx"));
+
+const AdminLogin    = lazy(() => import("./admin/AdminLogin.jsx"));
+const Dashboard     = lazy(() => import("./admin/Dashboard.jsx"));
+const Applications  = lazy(() => import("./admin/Applications.jsx"));
+const StudentsAdmin = lazy(() => import("./admin/StudentsAdmin.jsx"));
+const CoursesAdmin  = lazy(() => import("./admin/CoursesAdmin.jsx"));
+const TeachersAdmin = lazy(() => import("./admin/TeachersAdmin.jsx"));
+const AdminsManage  = lazy(() => import("./admin/AdminsManage.jsx"));
+
+const StudentLogin     = lazy(() => import("./student/StudentLogin.jsx"));
+const StudentDashboard = lazy(() => import("./student/StudentDashboard.jsx"));
+const TeacherLogin     = lazy(() => import("./teacher/TeacherLogin.jsx"));
+const TeacherDashboard = lazy(() => import("./teacher/TeacherDashboard.jsx"));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen grid place-items-center bg-slate-50 dark:bg-slate-950">
+      <div className="flex flex-col items-center gap-3">
+        <svg className="w-8 h-8 animate-spin text-brand-500" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        <p className="text-sm text-slate-400 font-medium">Yuklanmoqda...</p>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
@@ -64,5 +80,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 }

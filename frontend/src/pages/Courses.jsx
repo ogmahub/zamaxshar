@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import api from "../api/axios.js";
+import { getCached, setCached } from "../api/apiCache.js";
 import CourseCard from "../components/CourseCard.jsx";
 
 const fadeUp = {
@@ -18,7 +19,12 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/courses").then((r) => { setCourses(r.data); setLoading(false); }).catch(() => setLoading(false));
+    const cached = getCached("/courses");
+    if (cached) { setCourses(cached); setLoading(false); return; }
+    api.get("/courses")
+      .then((r) => { setCached("/courses", r.data); setCourses(r.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (

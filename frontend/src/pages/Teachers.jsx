@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import api from "../api/axios.js";
+import { getCached, setCached } from "../api/apiCache.js";
 import TeacherCard from "../components/TeacherCard.jsx";
 
 const fadeUp = {
@@ -18,7 +19,12 @@ export default function Teachers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/teachers").then((r) => { setTeachers(r.data); setLoading(false); }).catch(() => setLoading(false));
+    const cached = getCached("/teachers");
+    if (cached) { setTeachers(cached); setLoading(false); return; }
+    api.get("/teachers")
+      .then((r) => { setCached("/teachers", r.data); setTeachers(r.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (

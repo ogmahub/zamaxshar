@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/index.js";
 import { getCourseIcon } from "./courseIcons.js";
 
-export default function CourseCard({ course }) {
+function CourseCard({ course }) {
   const { t } = useTranslation();
   const lang = i18n.language;
   const title = course[`title${lang[0].toUpperCase() + lang.slice(1)}`] || course.titleUz;
@@ -59,3 +60,5 @@ export default function CourseCard({ course }) {
     </div>
   );
 }
+
+export default memo(CourseCard);

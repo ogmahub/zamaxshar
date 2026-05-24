@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import api from "../api/axios.js";
+import { getCached, setCached } from "../api/apiCache.js";
 import CourseCard from "../components/CourseCard.jsx";
 import TeacherCard from "../components/TeacherCard.jsx";
 
@@ -49,14 +50,52 @@ function SectionWrapper({ children, className = "" }) {
   );
 }
 
+function CardSkeleton({ count = 3, tall = false }) {
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[...Array(count)].map((_, i) => (
+        <div key={i} className="card overflow-hidden animate-pulse">
+          {tall && <div className="h-44 bg-slate-200 dark:bg-slate-800" />}
+          <div className={tall ? "p-5 space-y-3" : "p-6 text-center space-y-3"}>
+            {!tall && <div className="w-24 h-24 rounded-3xl bg-slate-200 dark:bg-slate-800 mx-auto mb-2" />}
+            <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-xl w-3/4 mx-auto" />
+            <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/2 mx-auto" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
   const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [loadingTeachers, setLoadingTeachers] = useState(true);
 
   useEffect(() => {
-    api.get("/courses").then((r) => setCourses(r.data.slice(0, 3))).catch(() => {});
-    api.get("/teachers").then((r) => setTeachers(r.data.slice(0, 3))).catch(() => {});
+    const cached = getCached("/courses");
+    if (cached) {
+      setCourses(cached.slice(0, 3));
+      setLoadingCourses(false);
+    } else {
+      api.get("/courses")
+        .then((r) => { setCached("/courses", r.data); setCourses(r.data.slice(0, 3)); })
+        .catch(() => {})
+        .finally(() => setLoadingCourses(false));
+    }
+
+    const cachedT = getCached("/teachers");
+    if (cachedT) {
+      setTeachers(cachedT.slice(0, 3));
+      setLoadingTeachers(false);
+    } else {
+      api.get("/teachers")
+        .then((r) => { setCached("/teachers", r.data); setTeachers(r.data.slice(0, 3)); })
+        .catch(() => {})
+        .finally(() => setLoadingTeachers(false));
+    }
   }, []);
 
   const stats = [
@@ -183,13 +222,15 @@ export default function Home() {
               <p className="text-slate-500 dark:text-slate-400 text-lg">{t("courses.subtitle")}</p>
             </motion.div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((c, i) => (
-                <motion.div key={c._id} variants={fadeUp} custom={i}>
-                  <CourseCard course={c} />
-                </motion.div>
-              ))}
-            </div>
+            {loadingCourses ? <CardSkeleton count={3} tall /> : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {courses.map((c, i) => (
+                  <motion.div key={c._id} variants={fadeUp} custom={i}>
+                    <CourseCard course={c} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             <motion.div variants={fadeUp} className="text-center mt-12">
               <Link to="/courses" className="btn-secondary">
@@ -212,13 +253,15 @@ export default function Home() {
               <p className="text-slate-500 dark:text-slate-400 text-lg">{t("teachers.subtitle")}</p>
             </motion.div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {teachers.map((tc, i) => (
-                <motion.div key={tc._id} variants={fadeUp} custom={i}>
-                  <TeacherCard teacher={tc} />
-                </motion.div>
-              ))}
-            </div>
+            {loadingTeachers ? <CardSkeleton count={3} /> : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {teachers.map((tc, i) => (
+                  <motion.div key={tc._id} variants={fadeUp} custom={i}>
+                    <TeacherCard teacher={tc} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             <motion.div variants={fadeUp} className="text-center mt-12">
               <Link to="/teachers" className="btn-secondary">

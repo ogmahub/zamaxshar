@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function TeacherCard({ teacher }) {
+function TeacherCard({ teacher }) {
   const [showCert, setShowCert] = useState(false);
 
   const initials = teacher.name
@@ -15,7 +15,7 @@ export default function TeacherCard({ teacher }) {
         <div className="relative w-24 h-24 mx-auto mb-5">
           <div className="w-24 h-24 rounded-3xl overflow-hidden bg-gradient-to-br from-brand-400 to-brand-600 grid place-items-center shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-all duration-500 group-hover:scale-105">
             {teacher.photo ? (
-              <img src={teacher.photo} alt={teacher.name} className="w-full h-full object-cover" />
+              <img src={teacher.photo} alt={teacher.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             ) : (
               <span className="text-2xl font-black text-white">{initials}</span>
             )}
@@ -87,7 +87,7 @@ export default function TeacherCard({ teacher }) {
               {teacher.certificate.startsWith("data:application/pdf") ? (
                 <iframe src={teacher.certificate} className="w-full h-[70vh] rounded-2xl" title="cert" />
               ) : (
-                <img src={teacher.certificate} alt="" className="w-full max-h-[70vh] object-contain rounded-2xl" />
+                <img src={teacher.certificate} alt="" className="w-full max-h-[70vh] object-contain rounded-2xl" loading="lazy" />
               )}
             </motion.div>
           </motion.div>
@@ -96,3 +96,5 @@ export default function TeacherCard({ teacher }) {
     </>
   );
 }
+
+export default memo(TeacherCard);

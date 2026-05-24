@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [serverSlow, setServerSlow] = useState(false);
 
   const storeAuth = (data) => {
     setUser(data.user || null);
@@ -19,12 +20,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refresh = async () => {
+    const slowTimer = setTimeout(() => setServerSlow(true), 4000);
     try {
       const { data } = await api.get("/auth/session");
       setUser(data.user || null);
     } catch {
       setUser(null);
     } finally {
+      clearTimeout(slowTimer);
+      setServerSlow(false);
       setLoading(false);
     }
   };
@@ -86,7 +90,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginAdmin, loginStudent, loginTeacher, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, serverSlow, login, loginAdmin, loginStudent, loginTeacher, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );
