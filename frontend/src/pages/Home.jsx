@@ -61,8 +61,8 @@ export default function Home() {
 
   const stats = [
     { label: t("stats.students"), value: "5000+", icon: "🎓", color: "from-brand-400 to-brand-600" },
-    { label: t("stats.teachers"), value: "20+",   icon: "👨‍🏫", color: "from-violet-400 to-violet-600" },
-    { label: t("stats.courses"),  value: "10+",   icon: "📚", color: "from-amber-400 to-orange-500" },
+    { label: t("stats.teachers"), value: "100+",  icon: "👨‍🏫", color: "from-violet-400 to-violet-600" },
+    { label: t("stats.courses"),  value: "15+",   icon: "📚", color: "from-amber-400 to-orange-500" },
     { label: t("stats.years"),    value: "5+",    icon: "⭐", color: "from-sky-400 to-blue-600" },
   ];
 
