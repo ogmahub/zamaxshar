@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema({
+  subject:         { type: String, default: "", trim: true },
   course:          { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   teacher:         { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
+  teacherName:     { type: String, default: "" },
   group:           { type: String, default: "", trim: true },
   lessonStartTime: { type: String, default: "", trim: true },
   lessonEndTime:   { type: String, default: "", trim: true },

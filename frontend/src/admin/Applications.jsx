@@ -3,6 +3,12 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import api from "../api/axios.js";
 
+const WEEKDAYS = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+const WEEKDAY_PRESETS = [
+  { label: "Du/Chor/Ju", days: ["Dushanba", "Chorshanba", "Juma"] },
+  { label: "Se/Pay/Sha", days: ["Seshanba", "Payshanba", "Shanba"] },
+];
+
 const STATUS_COLORS = {
   new: "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
   accepted: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
@@ -23,17 +29,8 @@ export default function Applications() {
   const [apps, setApps] = useState([]);
   const [convertId, setConvertId] = useState(null);
   const [editId, setEditId] = useState(null);
-  const [teachers, setTeachers] = useState([]);
-  const [selectedCourseTitle, setSelectedCourseTitle] = useState("");
-  const [convertForm, setConvertForm] = useState({
-    password: "12345",
-    teacher: "",
-    group: "",
-    lessonStartTime: "",
-    lessonEndTime: "",
-    validFrom: todayISO(),
-    validUntil: addDaysISO(todayISO(), 30)
-  });
+  const [subjectTeachers, setSubjectTeachers] = useState({});
+  const [convertForm, setConvertForm] = useState({ password: "12345", enrollments: [] });
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -58,23 +55,6 @@ export default function Applications() {
   useEffect(() => {
     load();
   }, []);
-
-  const loadTeachersForCourse = async (courseTitle) => {
-    try {
-      const { data } = await api.get("/teachers", { params: { subject: courseTitle } });
-      setTeachers(data);
-      setConvertForm((s) => ({
-        ...s,
-        teacher: data[0]?._id || ""
-      }));
-    } catch {
-      setTeachers([]);
-      setConvertForm((s) => ({
-        ...s,
-        teacher: ""
-      }));
-    }
-  };
 
   const openEdit = (app) => {
     setEditId(app._id);
@@ -109,19 +89,56 @@ export default function Applications() {
 
   const openConvert = async (app) => {
     const start = todayISO();
-    const courseTitle = app.course?.titleUz || (app.selectedSubjects?.[0] || "");
-    setSelectedCourseTitle(courseTitle);
-    setConvertId(app._id);
-    setConvertForm({
-      password: app.passwordPlain || "12345",
+    const subjects = app.selectedSubjects?.length
+      ? app.selectedSubjects
+      : (app.course?.titleUz ? [app.course.titleUz] : []);
+    const enrollments = subjects.map((subject) => ({
+      subject,
       teacher: "",
       group: "",
+      weekdays: [],
       lessonStartTime: "",
       lessonEndTime: "",
       validFrom: start,
-      validUntil: addDaysISO(start, 30)
-    });
-    await loadTeachersForCourse(courseTitle);
+      validUntil: addDaysISO(start, 30),
+    }));
+    setConvertId(app._id);
+    setConvertForm({ password: app.passwordPlain || "12345", enrollments });
+    try {
+      const { data: allTeachers } = await api.get("/teachers");
+      const norm = (s) => String(s || "").trim().toLowerCase();
+      const map = {};
+      subjects.forEach((subj) => {
+        map[subj] = allTeachers.filter((tc) =>
+          norm(tc.subject).includes(norm(subj)) || norm(subj).includes(norm(tc.subject))
+        );
+      });
+      setSubjectTeachers(map);
+    } catch {
+      const empty = {};
+      subjects.forEach((s) => { empty[s] = []; });
+      setSubjectTeachers(empty);
+    }
+  };
+
+  const updateEnrollment = (idx, field, value) => {
+    setConvertForm((s) => ({
+      ...s,
+      enrollments: s.enrollments.map((en, i) => i === idx ? { ...en, [field]: value } : en),
+    }));
+  };
+
+  const toggleWeekday = (idx, day) => {
+    setConvertForm((s) => ({
+      ...s,
+      enrollments: s.enrollments.map((en, i) => {
+        if (i !== idx) return en;
+        const days = en.weekdays.includes(day)
+          ? en.weekdays.filter((d) => d !== day)
+          : [...en.weekdays, day];
+        return { ...en, weekdays: days };
+      }),
+    }));
   };
 
   const updateStatus = async (id, status) => {
@@ -316,86 +333,99 @@ export default function Applications() {
 
       {convertId && (
         <div className="fixed inset-0 bg-black/50 z-50 grid place-items-center p-4" onClick={() => setConvertId(null)}>
-          <form onClick={(e) => e.stopPropagation()} onSubmit={convert} className="card p-6 w-full max-w-md space-y-4">
+          <form onClick={(e) => e.stopPropagation()} onSubmit={convert} className="card p-6 w-full max-w-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-bold">Studentga aylantirish</h3>
-            <div className="text-sm text-slate-500">
-              Asosiy fan (ustozni topish uchun):
-              <span className="ml-1 font-semibold text-slate-700 dark:text-slate-200">{selectedCourseTitle || "—"}</span>
-            </div>
+
             <div>
               <label className="label block mb-1">Parol</label>
-              <input className="input" required value={convertForm.password} onChange={(e) => setConvertForm({ ...convertForm, password: e.target.value })} />
+              <input className="input" required value={convertForm.password} onChange={(e) => setConvertForm((s) => ({ ...s, password: e.target.value }))} />
             </div>
-            <div>
-              <label className="label block mb-1">Ustoz</label>
-              <select className="input" required value={convertForm.teacher} onChange={(e) => setConvertForm({ ...convertForm, teacher: e.target.value })}>
-                <option value="">—</option>
-                {teachers.map((tc) => (
-                  <option key={tc._id} value={tc._id}>
-                    {tc.name}{tc.subject ? ` (${tc.subject})` : ""}
-                  </option>
-                ))}
-              </select>
-              {teachers.length === 0 && (
-                <p className="mt-1 text-xs text-rose-500">Bu fan bo'yicha faol ustoz topilmadi.</p>
-              )}
-            </div>
-            <div>
-              <label className="label block mb-1">Guruh</label>
-              <input
-                className="input"
-                placeholder="Masalan: 1-guruh"
-                value={convertForm.group}
-                onChange={(e) => setConvertForm({ ...convertForm, group: e.target.value })}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label block mb-1">Boshlanish vaqti</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={5}
-                  className="input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 caret-brand-500"
-                  value={convertForm.lessonStartTime}
-                  onChange={(e) => setConvertForm({ ...convertForm, lessonStartTime: e.target.value })}
-                />
+
+            {convertForm.enrollments.map((en, idx) => (
+              <div key={en.subject} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-6 h-6 rounded-full bg-brand-500 text-white text-xs font-bold grid place-items-center shrink-0">{idx + 1}</span>
+                  <span className="font-semibold text-brand-700 dark:text-brand-300">{en.subject}</span>
+                </div>
+
+                <div>
+                  <label className="label block mb-1">Ustoz</label>
+                  <select className="input" value={en.teacher} onChange={(e) => updateEnrollment(idx, "teacher", e.target.value)}>
+                    <option value="">— Tanlang —</option>
+                    {(subjectTeachers[en.subject] || []).map((tc) => (
+                      <option key={tc._id} value={tc._id}>{tc.name}{tc.subject ? ` (${tc.subject})` : ""}</option>
+                    ))}
+                  </select>
+                  {!(subjectTeachers[en.subject]?.length) && (
+                    <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">Bu fan bo'yicha faol ustoz topilmadi.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label block mb-1">Guruh</label>
+                  <input className="input" placeholder="1-guruh" value={en.group} onChange={(e) => updateEnrollment(idx, "group", e.target.value)} />
+                </div>
+
+                <div>
+                  <label className="label block mb-2">Hafta kunlari</label>
+                  <div className="flex gap-2 mb-2">
+                    {WEEKDAY_PRESETS.map((p) => (
+                      <button key={p.label} type="button"
+                        onClick={() => updateEnrollment(idx, "weekdays", p.days)}
+                        className={`px-3 py-1 text-xs rounded-full border font-medium transition-all ${
+                          JSON.stringify(en.weekdays) === JSON.stringify(p.days)
+                            ? "border-brand-500 bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-300"
+                            : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-400"
+                        }`}>
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {WEEKDAYS.map((day) => (
+                      <button key={day} type="button"
+                        onClick={() => toggleWeekday(idx, day)}
+                        className={`px-2.5 py-1 text-xs rounded-full border font-medium transition-all ${
+                          en.weekdays.includes(day)
+                            ? "border-brand-500 bg-brand-500 text-white"
+                            : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-400"
+                        }`}>
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="label block mb-1">Boshlanish vaqti</label>
+                    <input type="text" inputMode="numeric" maxLength={5} placeholder="14:00" className="input" value={en.lessonStartTime} onChange={(e) => updateEnrollment(idx, "lessonStartTime", e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="label block mb-1">Tugash vaqti</label>
+                    <input type="text" inputMode="numeric" maxLength={5} placeholder="16:00" className="input" value={en.lessonEndTime} onChange={(e) => updateEnrollment(idx, "lessonEndTime", e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="label block mb-1">Boshlanish sanasi</label>
+                    <input type="date" className="input" value={en.validFrom}
+                      onChange={(e) => {
+                        const d = e.target.value;
+                        updateEnrollment(idx, "validFrom", d);
+                        if (d) updateEnrollment(idx, "validUntil", addDaysISO(d, 30));
+                      }} />
+                  </div>
+                  <div>
+                    <label className="label block mb-1">Tugash sanasi</label>
+                    <input type="date" className="input" value={en.validUntil} onChange={(e) => updateEnrollment(idx, "validUntil", e.target.value)} />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="label block mb-1">Tugash vaqti</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={5}
-                  className="input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 caret-brand-500"
-                  value={convertForm.lessonEndTime}
-                  onChange={(e) => setConvertForm({ ...convertForm, lessonEndTime: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="label block mb-1">Boshlanish</label>
-                <input
-                  type="date"
-                  className="input"
-                  value={convertForm.validFrom}
-                  onChange={(e) => {
-                    const start = e.target.value;
-                    setConvertForm((s) => ({
-                      ...s,
-                      validFrom: start,
-                      validUntil: start ? addDaysISO(start, 30) : s.validUntil
-                    }));
-                  }}
-                />
-              </div>
-              <div>
-                <label className="label block mb-1">Tugash</label>
-                <input type="date" className="input" value={convertForm.validUntil} onChange={(e) => setConvertForm({ ...convertForm, validUntil: e.target.value })} />
-              </div>
-            </div>
-            <div className="flex gap-2 justify-end">
+            ))}
+
+            <div className="flex gap-2 justify-end pt-2">
               <button type="button" onClick={() => setConvertId(null)} className="btn-secondary">Bekor</button>
               <button type="submit" className="btn-primary">Yaratish</button>
             </div>

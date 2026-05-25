@@ -89,7 +89,7 @@ export default function StudentDashboard() {
                     <div className="flex items-start justify-between gap-2 flex-wrap">
                       <div>
                         <div className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-1">Fan #{idx + 1}</div>
-                        <div className="text-xl font-bold">{en.course?.titleUz || "—"}</div>
+                        <div className="text-xl font-bold">{en.subject || en.course?.titleUz || "—"}</div>
                         {en.course?.descriptionUz && <p className="text-sm text-slate-500 mt-1">{en.course.descriptionUz}</p>}
                         <div className="flex gap-2 mt-2 flex-wrap">
                           {en.course?.duration && <span className="px-2 py-0.5 rounded-full text-xs bg-brand-50 dark:bg-brand-500/10 text-brand-700">{en.course.duration}</span>}
@@ -103,17 +103,17 @@ export default function StudentDashboard() {
                     </div>
 
                     {/* O'qituvchi */}
-                    {en.teacher && (
+                    {(en.teacher || en.teacherName) && (
                       <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                         <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-300 to-indigo-500 grid place-items-center text-lg text-white font-bold overflow-hidden flex-shrink-0">
-                          {en.teacher.photo
+                          {en.teacher?.photo
                             ? <img src={en.teacher.photo} alt="" className="w-full h-full object-cover" />
-                            : (en.teacher.name || "?").charAt(0)}
+                            : (en.teacher?.name || en.teacherName || "?").charAt(0)}
                         </div>
                         <div>
-                          <div className="font-semibold text-sm">{en.teacher.name}</div>
-                          <div className="text-xs text-brand-600">{en.teacher.subject} o'qituvchisi</div>
-                          {en.teacher.phone && <div className="text-xs text-slate-400">📞 {en.teacher.phone}</div>}
+                          <div className="font-semibold text-sm">{en.teacher?.name || en.teacherName}</div>
+                          <div className="text-xs text-brand-600">{en.teacher?.subject || en.subject} o'qituvchisi</div>
+                          {en.teacher?.phone && <div className="text-xs text-slate-400">📞 {en.teacher.phone}</div>}
                         </div>
                       </div>
                     )}

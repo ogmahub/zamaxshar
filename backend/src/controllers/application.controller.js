@@ -85,25 +85,35 @@ export const deleteApplication = async (req, res) => {
 
 export const convertToStudent = async (req, res) => {
   try {
-    const { password, teacher, validFrom, validUntil, group = "", lessonStartTime = "", lessonEndTime = "" } = req.body;
+    const { password, enrollments: enrollmentData = [] } = req.body;
     const app = await Application.findById(req.params.id).populate("course");
     if (!app) return res.status(404).json({ error: "Ariza topilmadi" });
 
-    const courseTitle = app.course?.titleUz || (app.selectedSubjects?.[0] || "");
-    const teachers = await Teacher.find({ isActive: true, isDeleted: false }).select("_id name subject");
-    const matchingTeachers = teachers.filter((item) => subjectMatches(item.subject, courseTitle));
-
-    if (!matchingTeachers.length) {
-      return res.status(400).json({ error: "Bu fan bo'yicha faol ustoz topilmadi" });
+    if (!enrollmentData.length) {
+      return res.status(400).json({ error: "Kamida bitta enrollment kiritilishi kerak" });
     }
 
-    let selectedTeacher = matchingTeachers[0];
-    if (teacher) {
-      selectedTeacher = matchingTeachers.find((item) => String(item._id) === String(teacher));
-      if (!selectedTeacher) {
-        return res.status(400).json({ error: "Tanlangan ustoz ushbu fan uchun mos emas" });
-      }
-    }
+    const enrollments = await Promise.all(
+      enrollmentData.map(async (en) => {
+        let teacherName = "";
+        if (en.teacher) {
+          const t = await Teacher.findById(en.teacher).select("name");
+          teacherName = t?.name || "";
+        }
+        return {
+          subject: en.subject || "",
+          teacher: en.teacher || null,
+          teacherName,
+          group: en.group || "",
+          lessonStartTime: en.lessonStartTime || "",
+          lessonEndTime: en.lessonEndTime || "",
+          weekdays: Array.isArray(en.weekdays) ? en.weekdays : [],
+          validFrom: en.validFrom || null,
+          validUntil: en.validUntil || null,
+          status: "active"
+        };
+      })
+    );
 
     const finalPassword = password || app.passwordPlain || "12345";
     const passwordHash = await hashPassword(finalPassword);
@@ -118,14 +128,8 @@ export const convertToStudent = async (req, res) => {
       existing.username = username;
       existing.passwordHash = passwordHash;
       existing.passwordPlain = finalPassword;
-      existing.course = app.course;
-      existing.teacher = selectedTeacher._id;
-      existing.group = group;
-      existing.lessonStartTime = lessonStartTime;
-      existing.lessonEndTime = lessonEndTime;
-      existing.validFrom = validFrom;
-      existing.validUntil = validUntil;
       if (app.selectedSubjects?.length) existing.selectedSubjects = app.selectedSubjects;
+      existing.enrollments = enrollments;
       student = await existing.save();
     } else {
       student = await Student.create({
@@ -135,14 +139,8 @@ export const convertToStudent = async (req, res) => {
         phone: app.phone,
         passwordHash,
         passwordPlain: finalPassword,
-        course: app.course,
-        teacher: selectedTeacher._id,
-        group,
-        lessonStartTime,
-        lessonEndTime,
-        validFrom,
-        validUntil,
-        selectedSubjects: app.selectedSubjects || []
+        selectedSubjects: app.selectedSubjects || [],
+        enrollments
       });
     }
 
