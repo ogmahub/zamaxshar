@@ -30,6 +30,13 @@ const makeUsername = async (firstName, lastName, phone) => {
 
 export const createApplication = async (req, res) => {
   try {
+    const { selectedSubjects } = req.body;
+    if (!Array.isArray(selectedSubjects) || selectedSubjects.length < 3) {
+      return res.status(400).json({ error: "Kamida 3 ta fan tanlang" });
+    }
+    if (selectedSubjects.length > 5) {
+      return res.status(400).json({ error: "Ko'pi bilan 5 ta fan tanlash mumkin" });
+    }
     const app = await Application.create(req.body);
     res.status(201).json(app);
   } catch (error) {
@@ -82,7 +89,7 @@ export const convertToStudent = async (req, res) => {
     const app = await Application.findById(req.params.id).populate("course");
     if (!app) return res.status(404).json({ error: "Ariza topilmadi" });
 
-    const courseTitle = app.course?.titleUz || "";
+    const courseTitle = app.course?.titleUz || (app.selectedSubjects?.[0] || "");
     const teachers = await Teacher.find({ isActive: true, isDeleted: false }).select("_id name subject");
     const matchingTeachers = teachers.filter((item) => subjectMatches(item.subject, courseTitle));
 

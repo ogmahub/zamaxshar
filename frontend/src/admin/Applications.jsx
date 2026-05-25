@@ -21,7 +21,6 @@ const addDaysISO = (dateStr, days) => {
 export default function Applications() {
   const { t } = useTranslation();
   const [apps, setApps] = useState([]);
-  const [courses, setCourses] = useState([]);
   const [convertId, setConvertId] = useState(null);
   const [editId, setEditId] = useState(null);
   const [teachers, setTeachers] = useState([]);
@@ -39,6 +38,7 @@ export default function Applications() {
     firstName: "",
     lastName: "",
     phone: "",
+    selectedSubjects: [],
     course: "",
     studyMode: "offline",
     startDate: "",
@@ -57,7 +57,6 @@ export default function Applications() {
 
   useEffect(() => {
     load();
-    api.get("/courses").then((r) => setCourses(r.data)).catch(() => {});
   }, []);
 
   const loadTeachersForCourse = async (courseTitle) => {
@@ -85,6 +84,7 @@ export default function Applications() {
       firstName: app.firstName || "",
       lastName: app.lastName || "",
       phone: app.phone || "",
+      selectedSubjects: app.selectedSubjects || [],
       course: app.course?._id || "",
       studyMode: app.studyMode || "offline",
       startDate: start,
@@ -109,7 +109,7 @@ export default function Applications() {
 
   const openConvert = async (app) => {
     const start = todayISO();
-    const courseTitle = app.course?.titleUz || "";
+    const courseTitle = app.course?.titleUz || (app.selectedSubjects?.[0] || "");
     setSelectedCourseTitle(courseTitle);
     setConvertId(app._id);
     setConvertForm({
@@ -168,7 +168,7 @@ export default function Applications() {
               <tr>
                 <th className="px-4 py-3 text-left">Ism</th>
                 <th className="px-4 py-3 text-left">Telefon</th>
-                <th className="px-4 py-3 text-left">Kurs</th>
+                <th className="px-4 py-3 text-left">Fanlar</th>
                 <th className="px-4 py-3 text-left">Format</th>
                 <th className="px-4 py-3 text-left">Status</th>
                 <th className="px-4 py-3 text-right">{t("common.actions")}</th>
@@ -179,7 +179,17 @@ export default function Applications() {
                 <tr key={a._id} className="border-t border-slate-200 dark:border-slate-800">
                   <td className="px-4 py-3 font-medium">{a.firstName} {a.lastName}</td>
                   <td className="px-4 py-3">{a.phone}</td>
-                  <td className="px-4 py-3">{a.course?.titleUz || "—"}</td>
+                  <td className="px-4 py-3">
+                    {a.selectedSubjects?.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {a.selectedSubjects.map((s) => (
+                          <span key={s} className="px-2 py-0.5 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-medium">{s}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">{a.course?.titleUz || "—"}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">{a.studyMode}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[a.status]}`}>
@@ -231,12 +241,16 @@ export default function Applications() {
                 <label className="label block mb-1">Telefon</label>
                 <input className="input" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
               </div>
-              <div>
-                <label className="label block mb-1">Kurs</label>
-                <select className="input" value={editForm.course} onChange={(e) => setEditForm({ ...editForm, course: e.target.value })}>
-                  <option value="">—</option>
-                  {courses.map((c) => <option key={c._id} value={c._id}>{c.titleUz}</option>)}
-                </select>
+              <div className="sm:col-span-2">
+                <label className="label block mb-1">Tanlangan fanlar</label>
+                <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 min-h-[2.5rem]">
+                  {editForm.selectedSubjects?.length > 0
+                    ? editForm.selectedSubjects.map((s) => (
+                        <span key={s} className="px-2.5 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-semibold">{s}</span>
+                      ))
+                    : <span className="text-slate-400 text-sm">—</span>
+                  }
+                </div>
               </div>
               <div>
                 <label className="label block mb-1">Format</label>
@@ -305,7 +319,8 @@ export default function Applications() {
           <form onClick={(e) => e.stopPropagation()} onSubmit={convert} className="card p-6 w-full max-w-md space-y-4">
             <h3 className="text-lg font-bold">Studentga aylantirish</h3>
             <div className="text-sm text-slate-500">
-              Fan: <span className="font-semibold text-slate-700 dark:text-slate-200">{selectedCourseTitle || "—"}</span>
+              Asosiy fan (ustozni topish uchun):
+              <span className="ml-1 font-semibold text-slate-700 dark:text-slate-200">{selectedCourseTitle || "—"}</span>
             </div>
             <div>
               <label className="label block mb-1">Parol</label>

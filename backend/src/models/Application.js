@@ -6,6 +6,7 @@ const applicationSchema = new mongoose.Schema(
     lastName: { type: String, default: "", trim: true },
     phone: { type: String, required: true, trim: true },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+    selectedSubjects: { type: [String], default: [] },
     studyMode: { type: String, enum: ["online", "offline"], default: "offline" },
     startDate: { type: Date },
     validUntil: { type: Date },

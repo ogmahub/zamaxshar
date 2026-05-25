@@ -1,42 +1,58 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import api from "../api/axios.js";
 
+const SUBJECTS = [
+  "Ingliz tili", "Iqtisodiyot asoslari", "Geografiya", "Informatika",
+  "Astronomiya", "Huquq asoslari", "Geometriya", "Tarix",
+  "Biologiya", "Algebra", "Fizika", "Adabiyot",
+  "Matematika", "Kimyo", "Ona tili",
+];
+
+const MIN = 3;
+const MAX = 5;
+
 export default function Register() {
   const { t } = useTranslation();
-  const location = useLocation();
-  const hiddenCourses = new Set([
-    "arab tili",
-    "chizmachilik",
-    "tasviriy san'at",
-    "musiqa",
-    "jismoniy tarbiya",
-    "texnologiya"
-  ]);
-  const [courses, setCourses] = useState([]);
   const [form, setForm] = useState({
     firstName: "", lastName: "", phone: "",
-    course: location.state?.courseId || "",
+    selectedSubjects: [],
     studyMode: "offline", startDate: "", message: ""
   });
   const [loading, setLoading] = useState(false);
+  const [subjectError, setSubjectError] = useState("");
 
-  useEffect(() => {
-    api.get("/courses")
-      .then((r) => setCourses((r.data || []).filter((course) => !hiddenCourses.has(String(course.titleUz || "").trim().toLowerCase()))))
-      .catch(() => {});
-  }, []);
+  const toggleSubject = (subject) => {
+    setSubjectError("");
+    setForm((s) => {
+      const already = s.selectedSubjects.includes(subject);
+      if (!already && s.selectedSubjects.length >= MAX) {
+        setSubjectError(`Ko'pi bilan ${MAX} ta fan tanlash mumkin`);
+        return s;
+      }
+      return {
+        ...s,
+        selectedSubjects: already
+          ? s.selectedSubjects.filter((x) => x !== subject)
+          : [...s.selectedSubjects, subject],
+      };
+    });
+  };
 
   const submit = async (e) => {
     e.preventDefault();
+    if (form.selectedSubjects.length < MIN) {
+      setSubjectError(`Kamida ${MIN} ta fan tanlang`);
+      return;
+    }
     setLoading(true);
     try {
       await api.post("/applications", form);
       toast.success(t("register.success"));
-      setForm({ firstName: "", lastName: "", phone: "", course: "", studyMode: "offline", startDate: "", message: "" });
+      setForm({ firstName: "", lastName: "", phone: "", selectedSubjects: [], studyMode: "offline", startDate: "", message: "" });
+      setSubjectError("");
     } catch (err) {
       toast.error(err.response?.data?.error || t("register.error"));
     } finally {
@@ -118,13 +134,58 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="label block mb-2">{t("register.course")} *</label>
-              <select className="input" required value={form.course} onChange={update("course")}>
-                <option value="">— Kursni tanlang —</option>
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>{c.titleUz}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between mb-2">
+                <label className="label">Fanlarni tanlang * <span className="text-slate-400 font-normal">(min 3, max 5)</span></label>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  form.selectedSubjects.length >= MIN && form.selectedSubjects.length <= MAX
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                    : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                }`}>
+                  {form.selectedSubjects.length} / {MAX}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {SUBJECTS.map((subject) => {
+                  const checked = form.selectedSubjects.includes(subject);
+                  const disabled = !checked && form.selectedSubjects.length >= MAX;
+                  return (
+                    <button
+                      key={subject}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => toggleSubject(subject)}
+                      className={`relative flex items-center gap-2 px-3 py-2.5 rounded-2xl border text-sm font-medium text-left transition-all duration-200 ${
+                        checked
+                          ? "border-brand-500 bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-300 shadow-sm shadow-brand-500/10"
+                          : disabled
+                          ? "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50"
+                          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:border-brand-400 hover:bg-brand-50/50 dark:hover:bg-brand-500/5"
+                      }`}
+                    >
+                      <span className={`w-4 h-4 rounded shrink-0 border flex items-center justify-center transition-all ${
+                        checked
+                          ? "bg-brand-500 border-brand-500"
+                          : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700"
+                      }`}>
+                        {checked && (
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 8">
+                            <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </span>
+                      {subject}
+                    </button>
+                  );
+                })}
+              </div>
+              {subjectError && (
+                <p className="mt-2 text-sm text-rose-500 flex items-center gap-1.5">
+                  <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {subjectError}
+                </p>
+              )}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5">
