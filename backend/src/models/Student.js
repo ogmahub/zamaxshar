@@ -27,6 +27,7 @@ const studentSchema = new mongoose.Schema(
     group:           { type: String, default: "", trim: true },
     lessonStartTime: { type: String, default: "", trim: true },
     lessonEndTime:   { type: String, default: "", trim: true },
+    selectedSubjects: { type: [String], default: [] },
     paymentStatus: { type: String, enum: ["paid", "unpaid", "expired"], default: "unpaid" },
     validFrom:    { type: Date },
     validUntil:   { type: Date },

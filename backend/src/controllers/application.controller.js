@@ -125,6 +125,7 @@ export const convertToStudent = async (req, res) => {
       existing.lessonEndTime = lessonEndTime;
       existing.validFrom = validFrom;
       existing.validUntil = validUntil;
+      if (app.selectedSubjects?.length) existing.selectedSubjects = app.selectedSubjects;
       student = await existing.save();
     } else {
       student = await Student.create({
@@ -140,7 +141,8 @@ export const convertToStudent = async (req, res) => {
         lessonStartTime,
         lessonEndTime,
         validFrom,
-        validUntil
+        validUntil,
+        selectedSubjects: app.selectedSubjects || []
       });
     }
 

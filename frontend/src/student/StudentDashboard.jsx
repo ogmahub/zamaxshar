@@ -52,15 +52,31 @@ export default function StudentDashboard() {
           <div className="space-y-6">
 
             {/* Shaxsiy ma'lumot */}
-            <div className="card p-5 flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-indigo-600 grid place-items-center text-2xl text-white font-bold flex-shrink-0">
-                {(data.firstName || "?").charAt(0)}
+            <div className="card p-5">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-indigo-600 grid place-items-center text-2xl text-white font-bold flex-shrink-0">
+                  {(data.firstName || "?").charAt(0)}
+                </div>
+                <div>
+                  <div className="font-bold text-lg">{data.firstName} {data.lastName}</div>
+                  {data.phone && <div className="text-sm text-slate-500">📞 {data.phone}</div>}
+                  <div className="text-xs text-slate-400 mt-0.5">Login: <span className="font-medium text-slate-600 dark:text-slate-300">{data.username}</span></div>
+                </div>
               </div>
-              <div>
-                <div className="font-bold text-lg">{data.firstName} {data.lastName}</div>
-                {data.phone && <div className="text-sm text-slate-500">📞 {data.phone}</div>}
-                <div className="text-xs text-slate-400 mt-0.5">Login: <span className="font-medium text-slate-600 dark:text-slate-300">{data.username}</span></div>
-              </div>
+              {Array.isArray(data.selectedSubjects) && data.selectedSubjects.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    Tanlangan fanlar ({data.selectedSubjects.length} ta)
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {data.selectedSubjects.map((s) => (
+                      <span key={s} className="px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-semibold border border-brand-200 dark:border-brand-500/20">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ---- Ko'p fanlar (enrollments) ---- */}
