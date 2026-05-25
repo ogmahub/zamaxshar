@@ -52,102 +52,89 @@ export default function StudentDashboard() {
           <div className="space-y-6">
 
             {/* Shaxsiy ma'lumot */}
-            <div className="card p-5">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-indigo-600 grid place-items-center text-2xl text-white font-bold flex-shrink-0">
-                  {(data.firstName || "?").charAt(0)}
-                </div>
-                <div>
-                  <div className="font-bold text-lg">{data.firstName} {data.lastName}</div>
-                  {data.phone && <div className="text-sm text-slate-500">📞 {data.phone}</div>}
-                  <div className="text-xs text-slate-400 mt-0.5">Login: <span className="font-medium text-slate-600 dark:text-slate-300">{data.username}</span></div>
-                </div>
+            <div className="card p-5 flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-indigo-600 grid place-items-center text-2xl text-white font-bold flex-shrink-0">
+                {(data.firstName || "?").charAt(0)}
               </div>
-              {Array.isArray(data.selectedSubjects) && data.selectedSubjects.length > 0 && (
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                    Tanlangan fanlar ({data.selectedSubjects.length} ta)
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {data.selectedSubjects.map((s) => (
-                      <span key={s} className="px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-semibold border border-brand-200 dark:border-brand-500/20">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div>
+                <div className="font-bold text-lg">{data.firstName} {data.lastName}</div>
+                {data.phone && <div className="text-sm text-slate-500">📞 {data.phone}</div>}
+                <div className="text-xs text-slate-400 mt-0.5">Login: <span className="font-medium text-slate-600 dark:text-slate-300">{data.username}</span></div>
+              </div>
             </div>
 
-            {/* ---- Ko'p fanlar (enrollments) ---- */}
+            {/* ---- Fanlar (enrollments) ---- */}
             {Array.isArray(data.enrollments) && data.enrollments.length > 0 ? (
               <>
-                <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Mening fanlarim ({data.enrollments.length} ta)</div>
-                {data.enrollments.map((en, idx) => (
+                <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider px-1">
+                  Mening fanlarim &mdash; {data.enrollments.length} ta
+                </div>
+                {data.enrollments.map((en, idx) => {
+                  const tName = en.teacher?.name || en.teacherName || null;
+                  return (
                   <div key={en._id || idx} className="card p-6 border-l-4 border-brand-500 space-y-4">
-                    {/* Fan nomi */}
+
+                    {/* 1. Fan nomi */}
                     <div className="flex items-start justify-between gap-2 flex-wrap">
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-1">Fan #{idx + 1}</div>
+                        <div className="text-xs font-semibold uppercase tracking-wider text-brand-500 mb-1">Fan #{idx + 1}</div>
                         <div className="text-xl font-bold">{en.subject || en.course?.titleUz || "—"}</div>
-                        {en.course?.descriptionUz && <p className="text-sm text-slate-500 mt-1">{en.course.descriptionUz}</p>}
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          {en.course?.duration && <span className="px-2 py-0.5 rounded-full text-xs bg-brand-50 dark:bg-brand-500/10 text-brand-700">{en.course.duration}</span>}
-                          {(en.format || en.course?.format) && <span className="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 capitalize">{en.format || en.course?.format}</span>}
-                          {en.status === "inactive" && <span className="px-2 py-0.5 rounded-full text-xs bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">Nofaol</span>}
-                        </div>
+                        {en.status === "inactive" && (
+                          <span className="mt-1 inline-block px-2 py-0.5 rounded-full text-xs bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">Nofaol</span>
+                        )}
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${PAYMENT_COLORS[en.paymentStatus] || PAYMENT_COLORS.unpaid}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${PAYMENT_COLORS[en.paymentStatus] || PAYMENT_COLORS.unpaid}`}>
                         {en.paymentStatus === "paid" ? "To'langan" : en.paymentStatus === "expired" ? "Muddati tugagan" : "To'lanmagan"}
                       </span>
                     </div>
 
-                    {/* O'qituvchi */}
-                    {(en.teacher || en.teacherName) && (
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-300 to-indigo-500 grid place-items-center text-lg text-white font-bold overflow-hidden flex-shrink-0">
-                          {en.teacher?.photo
-                            ? <img src={en.teacher.photo} alt="" className="w-full h-full object-cover" />
-                            : (en.teacher?.name || en.teacherName || "?").charAt(0)}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-sm">{en.teacher?.name || en.teacherName}</div>
-                          <div className="text-xs text-brand-600">{en.teacher?.subject || en.subject} o'qituvchisi</div>
-                          {en.teacher?.phone && <div className="text-xs text-slate-400">📞 {en.teacher.phone}</div>}
-                        </div>
+                    {/* 2. Ustoz */}
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-indigo-500 grid place-items-center text-base text-white font-bold overflow-hidden shrink-0">
+                        {en.teacher?.photo
+                          ? <img src={en.teacher.photo} alt="" className="w-full h-full object-cover" />
+                          : (tName || "?").charAt(0)}
                       </div>
-                    )}
-
-                    {/* Jadval */}
-                    {(en.group || en.lessonStartTime || en.lessonEndTime) && (
-                      <div className="grid sm:grid-cols-3 gap-2 text-sm">
-                        <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
-                          <div className="text-xs text-slate-400 mb-0.5">Guruh</div>
-                          <div className="font-semibold">{en.group || "—"}</div>
-                        </div>
-                        <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
-                          <div className="text-xs text-slate-400 mb-0.5">Boshlanish</div>
-                          <div className="font-semibold">{en.lessonStartTime || "—"}</div>
-                        </div>
-                        <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
-                          <div className="text-xs text-slate-400 mb-0.5">Tugash</div>
-                          <div className="font-semibold">{en.lessonEndTime || "—"}</div>
-                        </div>
+                      <div>
+                        <div className="font-semibold text-sm">{tName || <span className="text-slate-400 italic">Ustoz biriktirilmagan</span>}</div>
+                        {(en.teacher?.subject || en.subject) && (
+                          <div className="text-xs text-brand-600 dark:text-brand-400">{en.teacher?.subject || en.subject} o'qituvchisi</div>
+                        )}
+                        {en.teacher?.phone && <div className="text-xs text-slate-400 mt-0.5">📞 {en.teacher.phone}</div>}
                       </div>
-                    )}
+                    </div>
 
-                    {/* Hafta kunlari */}
+                    {/* 3. Guruh + vaqt */}
+                    <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
+                        <div className="text-xs text-slate-400 mb-0.5">Guruh</div>
+                        <div className="font-semibold">{en.group || "—"}</div>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
+                        <div className="text-xs text-slate-400 mb-0.5">Boshlanish vaqti</div>
+                        <div className="font-semibold">{en.lessonStartTime || "—"}</div>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-2.5">
+                        <div className="text-xs text-slate-400 mb-0.5">Tugash vaqti</div>
+                        <div className="font-semibold">{en.lessonEndTime || "—"}</div>
+                      </div>
+                    </div>
+
+                    {/* 4. Hafta kunlari */}
                     {Array.isArray(en.weekdays) && en.weekdays.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {en.weekdays.map((day) => (
-                          <span key={day} className="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 text-sm font-semibold">
-                            {day}
-                          </span>
-                        ))}
+                      <div>
+                        <div className="text-xs text-slate-400 mb-1.5">Hafta kunlari</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {en.weekdays.map((day) => (
+                            <span key={day} className="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+                              {day}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
 
-                    {/* To'lov muddati */}
+                    {/* 5. Sanalar */}
                     {(en.validFrom || en.validUntil) && (
                       <div className="text-xs text-slate-400 space-x-3">
                         {en.validFrom && <span>Boshlanish: <span className="text-slate-600 dark:text-slate-300">{new Date(en.validFrom).toLocaleDateString()}</span></span>}
@@ -155,7 +142,8 @@ export default function StudentDashboard() {
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </>
             ) : (
               /* ---- Eski (legacy) ko'rinish ---- */
