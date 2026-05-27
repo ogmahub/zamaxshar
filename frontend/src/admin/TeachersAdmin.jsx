@@ -33,6 +33,7 @@ export default function TeachersAdmin() {
   const [items, setItems] = useState([]);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(blank);
+  const [saving, setSaving] = useState(false);
   const [previewCert, setPreviewCert] = useState(null);
   const [subjectOpen, setSubjectOpen] = useState(false);
   const photoInput = useRef();
@@ -61,6 +62,8 @@ export default function TeachersAdmin() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (saving) return;
+    setSaving(true);
     try {
       const payload = { ...form, phone: form.phone ? (form.phone.startsWith("+") ? form.phone : `+998${form.phone}`) : "" };
       if (!payload.password) delete payload.password;
@@ -68,10 +71,14 @@ export default function TeachersAdmin() {
       if (editing && editing !== "new" && !payload.phone) delete payload.phone;
       if (editing && editing !== "new") await api.put(`/teachers/${editing}`, payload);
       else await api.post("/teachers", payload);
-      toast.success("Saqlandi");
+      toast.success(editing === "new" ? "Ustoz muvaffaqiyatli qo'shildi" : "Saqlandi");
       setEditing(null); setForm(blank); load();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Xato");
+      console.error("[Teacher save error]", err);
+      const msg = err.response?.data?.error || err.message || "Server bilan bog'lanishda xato";
+      toast.error(msg);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -333,9 +340,10 @@ export default function TeachersAdmin() {
                   <button type="button" onClick={() => setEditing(null)} className="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800">
                     Bekor qilish
                   </button>
-                  <button type="submit" className="px-8 py-3 rounded-2xl text-white font-semibold shadow-lg"
+                  <button type="submit" disabled={saving}
+                          className="px-8 py-3 rounded-2xl text-white font-semibold shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
                           style={{ background: "linear-gradient(135deg, #7c3aed, #4f46e5)" }}>
-                    Saqlash
+                    {saving ? "Saqlanmoqda..." : "Saqlash"}
                   </button>
                 </div>
               </div>
