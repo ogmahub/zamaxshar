@@ -75,7 +75,11 @@ export default function TeachersAdmin() {
       setEditing(null); setForm(blank); load();
     } catch (err) {
       console.error("[Teacher save error]", err);
-      const msg = err.response?.data?.error || err.message || "Server bilan bog'lanishda xato";
+      const status = err.response?.status;
+      if (status === 401) return;
+      const msg = status === 403
+        ? "Ruxsat yo'q. Faqat admin ustoz qo'sha oladi."
+        : err.response?.data?.error || err.message || "Server bilan bog'lanishda xato";
       toast.error(msg);
     } finally {
       setSaving(false);
