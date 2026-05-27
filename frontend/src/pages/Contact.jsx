@@ -65,9 +65,17 @@ const SCHEDULE = [
 
 function WorkingHoursCard({ i }) {
   const now = new Date();
-  const todayIdx = now.getDay();
-  const mappedIdx = todayIdx === 0 ? 6 : todayIdx - 1;
-  const currentHour = now.getHours() + now.getMinutes() / 60;
+  const tashkentParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Tashkent",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(now);
+  const getPart = (type) => tashkentParts.find((part) => part.type === type)?.value;
+  const weekdayMap = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
+  const mappedIdx = weekdayMap[getPart("weekday")] ?? 0;
+  const currentHour = Number(getPart("hour")) + Number(getPart("minute")) / 60;
   const isOpenNow = mappedIdx < 6 && currentHour >= 8 && currentHour < 20;
 
   return (
