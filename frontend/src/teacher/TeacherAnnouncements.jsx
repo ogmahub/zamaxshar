@@ -105,7 +105,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="text"
                   className="input"
-                  placeholder="Matematika"
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 />
@@ -115,7 +114,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="text"
                   className="input"
-                  placeholder="7-8 sinflar"
                   value={form.grades}
                   onChange={(e) => setForm({ ...form, grades: e.target.value })}
                 />
@@ -125,7 +123,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="text"
                   className="input"
-                  placeholder="14:00 - 15:30"
                   value={form.lessonTime}
                   onChange={(e) => setForm({ ...form, lessonTime: e.target.value })}
                 />
@@ -135,7 +132,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="number"
                   className="input"
-                  placeholder="10"
                   value={form.seats}
                   onChange={(e) => setForm({ ...form, seats: e.target.value })}
                 />
@@ -145,7 +141,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="tel"
                   className="input"
-                  placeholder="+998 90 123 45 67"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
@@ -155,7 +150,6 @@ export default function TeacherAnnouncements() {
                 <input
                   type="text"
                   className="input"
-                  placeholder="@username"
                   value={form.telegram}
                   onChange={(e) => setForm({ ...form, telegram: e.target.value })}
                 />
@@ -180,7 +174,6 @@ export default function TeacherAnnouncements() {
               <textarea
                 className="input resize-none"
                 rows={4}
-                placeholder="E'lon haqida qo'shimcha ma'lumot..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
