@@ -258,10 +258,15 @@ export default function TeachersAdmin() {
                   <div>
                     <label className="text-sm text-slate-600 dark:text-slate-400 block mb-1.5">Oylik maosh</label>
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
+                      placeholder="0"
                       value={form.salary ?? ""}
-                      onChange={(e) => setForm({ ...form, salary: e.target.value === "" ? "" : Number(e.target.value) })}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setForm({ ...form, salary: val === "" ? "" : Number(val) });
+                      }}
                     />
                   </div>
                 </div>
