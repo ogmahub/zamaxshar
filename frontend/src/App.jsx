@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import PublicLayout from "./components/PublicLayout.jsx";
 import AdminLayout from "./admin/AdminLayout.jsx";
 import TeacherLayout from "./teacher/TeacherLayout.jsx";
+import StudentLayout from "./student/StudentLayout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 const Home          = lazy(() => import("./pages/Home.jsx"));
@@ -21,7 +22,9 @@ const TeachersAdmin = lazy(() => import("./admin/TeachersAdmin.jsx"));
 const AdminsManage  = lazy(() => import("./admin/AdminsManage.jsx"));
 
 const StudentDashboard = lazy(() => import("./student/StudentDashboard.jsx"));
+const StudentAnnouncements = lazy(() => import("./student/StudentAnnouncements.jsx"));
 const TeacherDashboard = lazy(() => import("./teacher/TeacherDashboard.jsx"));
+const TeacherAnnouncements = lazy(() => import("./teacher/TeacherAnnouncements.jsx"));
 
 function PageLoader() {
   return (
@@ -65,13 +68,17 @@ export default function App() {
 
       <Route path="/student/login" element={<Navigate to="/login" replace />} />
       <Route element={<ProtectedRoute role="student" />}>
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
+        <Route element={<StudentLayout />}>
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/announcements" element={<StudentAnnouncements />} />
+        </Route>
       </Route>
 
       <Route path="/teacher/login" element={<Navigate to="/login" replace />} />
       <Route element={<ProtectedRoute role="teacher" />}>
         <Route element={<TeacherLayout />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
         </Route>
       </Route>
 

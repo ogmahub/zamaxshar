@@ -15,6 +15,7 @@ import groupRoutes from "./routes/group.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import announcementRoutes from "./routes/announcement.routes.js";
 
 dotenv.config();
 
@@ -82,6 +83,7 @@ app.use("/api/groups", groupRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/admins", adminRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

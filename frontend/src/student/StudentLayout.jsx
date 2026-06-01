@@ -1,30 +1,23 @@
 import { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
-export default function TeacherLayout() {
+export default function StudentLayout() {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard");
 
   const handleLogout = async () => {
     await logout();
     navigate("/login", { replace: true });
   };
 
-  const selectSection = (section) => {
-    setActiveSection(section);
-    setOpen(false);
-  };
-
   const menuItems = [
-    { label: "Dashboard", icon: "📊", id: "dashboard", path: "/teacher/dashboard" },
-    { label: "Guruhlar", icon: "🧩", id: "groups", path: "/teacher/dashboard" },
-    { label: "Talabalar", icon: "🎓", id: "students", path: "/teacher/dashboard" },
-    { label: "E'lonlar", icon: "📢", id: "announcements", path: "/teacher/announcements" }
+    { label: "Dashboard", icon: "📚", path: "/student/dashboard" },
+    { label: "E'lonlar", icon: "📢", path: "/student/announcements" }
   ];
 
   return (
@@ -40,14 +33,14 @@ export default function TeacherLayout() {
         <nav className="flex-1 p-3 space-y-1">
           {menuItems.map((item) => (
             <button
-              key={item.id}
+              key={item.path}
               type="button"
               onClick={() => {
-                selectSection(item.id);
-                if (item.path) navigate(item.path);
+                navigate(item.path);
+                setOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
-                activeSection === item.id
+                location.pathname === item.path
                   ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
                   : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
@@ -58,7 +51,10 @@ export default function TeacherLayout() {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="p-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 px-3">
+            {user?.firstName} {user?.lastName}
+          </div>
           <button onClick={handleLogout} className="w-full btn-secondary text-sm">Chiqish</button>
         </div>
       </aside>
@@ -73,7 +69,7 @@ export default function TeacherLayout() {
         </header>
 
         <main className="flex-1 p-4 sm:p-6 overflow-x-auto">
-          <Outlet context={{ activeSection }} />
+          <Outlet />
         </main>
       </div>
     </div>
