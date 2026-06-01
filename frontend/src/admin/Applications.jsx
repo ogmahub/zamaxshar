@@ -342,7 +342,7 @@ export default function Applications() {
             </div>
 
             {convertForm.enrollments.map((en, idx) => (
-              <div key={en.subject} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+              <div key={idx} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-6 h-6 rounded-full bg-brand-500 text-white text-xs font-bold grid place-items-center shrink-0">{idx + 1}</span>
                   <span className="font-semibold text-brand-700 dark:text-brand-300">{en.subject}</span>

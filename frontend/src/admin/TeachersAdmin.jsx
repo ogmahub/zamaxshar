@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import api from "../api/axios.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
-const blank = { name: "", username: "", password: "", salary: 0, phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
+const blank = { name: "", username: "", password: "", salary: "", phone: "", subject: "", bio: "", photo: "", certificate: "", isActive: true };
 const schoolSubjects = [
   "Ona tili",
   "Adabiyot",
@@ -260,8 +260,8 @@ export default function TeachersAdmin() {
                     <input
                       type="number"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500"
-                      value={form.salary || 0}
-                      onChange={(e) => setForm({ ...form, salary: Number(e.target.value) || 0 })}
+                      value={form.salary ?? ""}
+                      onChange={(e) => setForm({ ...form, salary: e.target.value === "" ? "" : Number(e.target.value) })}
                     />
                   </div>
                 </div>
